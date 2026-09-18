@@ -634,4 +634,4 @@ When adding a new skill, prefer capabilities that:
 
 # License
 
-See [LICENSE](LICENSE) for details.
+See [LICENSE.md](LICENSE.md) for details.

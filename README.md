@@ -16,20 +16,43 @@ The goal is to make better engineering decisions before and during implementatio
 
 ---
 
-## Why ENFORGE?
+## Installation
 
-AI coding agents are very good at writing code quickly.
+ENFORGE can be installed using the [`skills` CLI](https://skills.sh).
 
-The harder problem is giving them enough structure to:
+### Install ENFORGE
 
-* understand an existing codebase before modifying it
-* identify the actual execution flow behind a feature
-* separate architectural decisions from implementation details
-* turn technical analysis into actionable tasks
-* execute changes consistently against an agreed plan
-* preserve decision context for future developers and agents
+Install the complete ENFORGE skill set:
 
-ENFORGE provides skills for those stages.
+```bash
+npx skills add rfanazhari/enforge
+```
+
+### Install a Specific Skill
+
+Install only the skill you need:
+
+```bash
+npx skills add rfanazhari/enforge --skill flow-scanner
+```
+
+```bash
+npx skills add rfanazhari/enforge --skill tripack
+```
+
+```bash
+npx skills add rfanazhari/enforge --skill task-executor
+```
+
+### Update ENFORGE
+
+Update your installed skills to the latest version:
+
+```bash
+npx skills update
+```
+
+After installation or update, restart your AI coding agent so the latest skills are loaded.
 
 ---
 
@@ -62,7 +85,7 @@ ENFORGE currently consists of three core skills:
 
 Flow Scanner analyzes existing code and reconstructs execution flows.
 
-It can be used at different scopes, such as:
+It can be used at different scopes:
 
 ```text
 File
@@ -80,7 +103,7 @@ Typical questions it helps answer:
 * Where are side effects introduced?
 * What existing assumptions or dependencies should be preserved?
 
-The output is intended to describe the **current state of the system**, rather than immediately proposing a redesign.
+The output describes the **current state of the system** rather than immediately proposing a redesign.
 
 ---
 
@@ -113,7 +136,7 @@ Breaks the solution into concrete implementation tasks that can be executed sequ
 
 Capture important engineering decisions, trade-offs, assumptions, and rejected alternatives.
 
-Tripack is designed to bridge the gap between:
+Tripack bridges the gap between:
 
 ```text
 "Here is how the system works."
@@ -146,13 +169,11 @@ The emphasis is on:
 
 The executor is not intended to replace engineering judgment.
 
-It is intended to reduce the gap between **a well-defined plan and its implementation**.
+It reduces the gap between **a well-defined plan and its implementation**.
 
 ---
 
 ## Design Principles
-
-ENFORGE is built around a few simple principles.
 
 ### Understand Before Changing
 
@@ -188,8 +209,6 @@ ENFORGE currently focuses on **Go-based backend systems**.
 
 The skill architecture is intentionally designed to remain technology-agnostic where possible, allowing additional technology-specific skills to be introduced over time.
 
-Planned expansion may include other languages, frameworks, and architectural ecosystems.
-
 ---
 
 ## Repository Structure
@@ -206,13 +225,13 @@ enforge/
 └── README.md
 ```
 
-Each skill is intended to be independently reusable while also working as part of the complete ENFORGE workflow.
+Each skill is independently reusable while also working as part of the complete ENFORGE workflow.
 
 ---
 
 ## Recommended Usage
 
-For a non-trivial change in an existing codebase, the recommended workflow is:
+For a non-trivial change in an existing codebase:
 
 ```text
 1. Scan
@@ -255,7 +274,7 @@ Design Strategy    Task Plan
      Code Changes
 ```
 
-This workflow is especially useful when working with unfamiliar or legacy systems where the largest risk is not writing code, but misunderstanding the system before changing it.
+This workflow is particularly useful when working with unfamiliar or legacy systems where the largest risk is not writing code, but misunderstanding the system before changing it.
 
 ---
 
@@ -352,4 +371,4 @@ When introducing a new skill, prefer skills that:
 
 ## License
 
-Add your preferred open-source license here.
+See [LICENSE](LICENSE) for details.

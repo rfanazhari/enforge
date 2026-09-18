@@ -17,7 +17,7 @@ Technical Planning
       ↓
 Architecture Audit
       ↓
-Refactoring / Implementation
+Implementation / Refactoring
 ```
 
 The objective is simple:
@@ -47,6 +47,10 @@ npx skills add rfanazhari/enforge --skill flow-scanner
 ```
 
 ```bash
+npx skills add rfanazhari/enforge --skill spec-delta-analyzer
+```
+
+```bash
 npx skills add rfanazhari/enforge --skill engineering-tripack-generator
 ```
 
@@ -59,7 +63,7 @@ npx skills add rfanazhari/enforge --skill go-refactor-planner
 ```
 
 ```bash
-npx skills add rfanazhari/enforge --skill spec-delta-analyzer
+npx skills add rfanazhari/enforge --skill go-task-executor
 ```
 
 ### Update installed skills
@@ -74,7 +78,7 @@ Restart your AI coding agent after installation or update so the latest skills a
 
 # Skills
 
-ENFORGE currently provides six engineering skills.
+ENFORGE currently provides seven engineering skills.
 
 ## 1. Capability Doc Generator
 
@@ -92,16 +96,16 @@ When ...
 Then ...
 ```
 
-This is useful when the business intent needs to be explicit before any technical solution is designed.
+This is useful when business intent needs to be explicit before any technical solution is designed.
 
 ### Use for
 
-* new business capabilities
-* feature requirements
-* business rule documentation
-* new modules
-* changes to existing business flows
-* capturing business intent before code exists
+* New business capabilities
+* Feature requirements
+* Business rule documentation
+* New modules
+* Changes to existing business flows
+* Capturing business intent before code exists
 
 ### Trigger prefix
 
@@ -139,22 +143,22 @@ Infrastructure
 
 The generated documentation includes:
 
-* flow summary
-* execution tree
-* request / response
-* dependency table
-* important notes
-* relevant assumptions and behavior
+* Flow summary
+* Execution tree
+* Request / response
+* Dependency table
+* Important notes
+* Relevant assumptions and behavior
 
 The skill can operate on a single file, multiple files, or a broader flow.
 
 ### Use for
 
-* understanding an unfamiliar codebase
-* documenting existing behavior
-* tracing endpoint execution
-* understanding dependencies
-* establishing the current-state flow before planning changes
+* Understanding an unfamiliar codebase
+* Documenting existing behavior
+* Tracing endpoint execution
+* Understanding dependencies
+* Establishing the current-state flow before planning changes
 
 ### Trigger phrases
 
@@ -190,19 +194,19 @@ New API Contract
 
 The output identifies:
 
-* what changes
-* what can be reused
-* what is new
-* affected behavior
-* implementation implications
+* What changes
+* What can be reused
+* What is new
+* Affected behavior
+* Implementation implications
 
 ### Use for
 
-* comparing an existing flow with a new API contract
-* understanding requirement changes
-* identifying reuse opportunities
-* identifying net-new implementation scope
-* preparing an implementation plan
+* Comparing an existing flow with a new API contract
+* Understanding requirement changes
+* Identifying reuse opportunities
+* Identifying net-new implementation scope
+* Preparing an implementation plan
 
 ### Trigger phrases
 
@@ -242,21 +246,21 @@ The skill is **stack-agnostic**.
 
 Rather than assuming a specific technology, it discovers the project's:
 
-* technology stack
-* architecture
-* conventions
-* engineering constraints
+* Technology stack
+* Architecture
+* Conventions
+* Engineering constraints
 
 from `CLAUDE.md`, `AGENTS.md`, and the codebase.
 
 ### Use for
 
-* new features
-* adjustments to existing features
-* requirement changes
-* implementation planning
-* revising an existing tripack
-* re-syncing documentation after requirements change
+* New features
+* Adjustments to existing features
+* Requirement changes
+* Implementation planning
+* Revising an existing tripack
+* Re-syncing documentation after requirements change
 
 ### Typical input
 
@@ -305,17 +309,19 @@ The skill should not be used for small bug fixes, document review without genera
 
 # Go Engineering Skills
 
-ENFORGE also provides Go-specific skills for architecture auditing and refactoring.
+ENFORGE also provides Go-specific skills for architecture auditing, refactoring, and implementation.
 
-These skills are intentionally separated:
+These skills form a controlled engineering lifecycle:
 
 ```text
 Audit
   ↓
-Refactor Plan
+Plan
+  ↓
+Execute
 ```
 
-This keeps architectural findings independent from the implementation plan.
+This separates architectural findings from planning and implementation.
 
 ---
 
@@ -358,8 +364,8 @@ The architecture audit should be completed before generating a refactoring plan.
 Generates a structured refactoring plan based on:
 
 * Go architecture audit findings
-* a provided audit report
-* direct inspection of a Go source file
+* A provided audit report
+* Direct inspection of a Go source file
 
 The output is a prioritized and dependency-aware task plan saved as a markdown document.
 
@@ -385,9 +391,68 @@ When no audit report is available, the Go Architecture Auditor should be run fir
 
 ---
 
-# Engineering Workflow
+## 7. Go Task Executor
 
-The skills are designed to work independently, but their real value comes from combining them into an engineering workflow.
+**Skill:** `go-task-executor`
+
+Executes a Go engineering task plan by writing actual Go code and tests against the team's engineering standards.
+
+It is typically used with the output of `engineering-tripack-generator` or `go-refactor-planner`, but can also work from a pasted task document or task description.
+
+The skill follows:
+
+```text
+Clean Architecture
+DDD
+TDD
+Go Engineering Standards
+```
+
+### Use for
+
+* Implementing a Go task plan
+* Building a planned feature
+* Executing a refactoring plan
+* Writing Go code and tests
+* Turning engineering documentation into implementation
+
+### Trigger prefix
+
+```text
+go-task-executor:
+```
+
+Example:
+
+```text
+go-task-executor:
+
+Implement task 2.3 from the task plan:
+Extract payment validation into the application layer
+and add unit tests.
+```
+
+The user must explicitly classify the target code as either:
+
+```text
+new
+```
+
+or:
+
+```text
+legacy
+```
+
+before code changes are made.
+
+This distinction allows implementation behavior to account for whether the code is being introduced for the first time or modified within an existing legacy flow.
+
+---
+
+# Engineering Workflows
+
+The skills are designed to work independently, but their real value comes from combining them into repeatable engineering workflows.
 
 ## New Capability
 
@@ -404,7 +469,9 @@ Engineering Tripack Generator
       ↓
 Task Plan
       ↓
-Implementation
+Go Task Executor
+      ↓
+Code + Tests
 ```
 
 ---
@@ -430,7 +497,9 @@ Engineering Tripack Generator
       ↓
 Task Plan
       ↓
-Implementation
+Go Task Executor
+      ↓
+Code + Tests
 ```
 
 ---
@@ -450,7 +519,9 @@ Go Refactor Planner
     ↓
 Prioritized Refactoring Tasks
     ↓
-Implementation
+Go Task Executor
+    ↓
+Refactored Code + Tests
 ```
 
 The separation is intentional.
@@ -463,11 +534,15 @@ The refactor planner answers:
 
 > **What should be changed, and in what order?**
 
+The task executor answers:
+
+> **How should those changes be implemented and validated in code?**
+
 ---
 
 # Recommended End-to-End Workflow
 
-For a substantial feature or system change, ENFORGE can be used as a complete pipeline:
+For a substantial feature or system change, ENFORGE can be used as a complete engineering pipeline:
 
 ```text
 ┌──────────────────────┐
@@ -479,7 +554,7 @@ For a substantial feature or system change, ENFORGE can be used as a complete pi
 └──────────┬───────────────┘
            ↓
 ┌──────────────────────┐
-│    Existing System  │
+│   Existing System    │
 └──────────┬───────────┘
            ↓
 ┌──────────────────────┐
@@ -496,18 +571,22 @@ For a substantial feature or system change, ENFORGE can be used as a complete pi
 └──────────┬─────────────────┘
            ↓
 ┌──────────────────────┐
-│ Architecture Audit  │
+│ Architecture Audit   │
 │   (when applicable)  │
 └──────────┬───────────┘
            ↓
 ┌──────────────────────┐
-│ Refactor / Implement │
+│ Refactor / Execute   │
+└──────────┬───────────┘
+           ↓
+┌──────────────────────┐
+│   Code + Tests       │
 └──────────────────────┘
 ```
 
 Not every task requires every skill.
 
-The workflow should be adapted to the nature of the change.
+The workflow should be adapted to the nature and scope of the change.
 
 ---
 
@@ -537,6 +616,10 @@ Complex changes should have a clear implementation strategy before code changes 
 
 Refactoring should be driven by identified problems and architectural intent rather than arbitrary code cleanup.
 
+### Test With the Change
+
+Implementation should include appropriate tests, especially when executing planned Go changes.
+
 ### Prefer Focused Changes
 
 Avoid unnecessary changes outside the intended scope.
@@ -549,7 +632,7 @@ Engineering context should remain useful to both humans and AI agents throughout
 
 # Technology Support
 
-ENFORGE currently includes:
+ENFORGE currently includes technology-agnostic engineering workflow skills and Go-specific implementation skills.
 
 ```text
 Technology-Agnostic
@@ -560,7 +643,8 @@ Technology-Agnostic
 Go
 ├── flow-scanner
 ├── go-arch-auditor
-└── go-refactor-planner
+├── go-refactor-planner
+└── go-task-executor
 ```
 
 The architecture is designed to support additional technology-specific skills in the future.
@@ -574,13 +658,15 @@ enforge/
 ├── skills/
 │   ├── capability-doc-generator/
 │   ├── flow-scanner/
+│   ├── spec-delta-analyzer/
 │   ├── engineering-tripack-generator/
 │   ├── go-arch-auditor/
 │   ├── go-refactor-planner/
-│   └── spec-delta-analyzer/
+│   └── go-task-executor/
 │
 ├── docs/
 ├── examples/
+├── LICENSE.md
 └── README.md
 ```
 
@@ -614,7 +700,9 @@ Then write the code.
 
 ENFORGE is under active development.
 
-The current implementation includes technology-agnostic engineering workflow skills and Go-specific architecture skills, with additional technology stacks planned for future development.
+The current implementation includes technology-agnostic engineering workflow skills and Go-specific architecture, planning, and execution skills.
+
+Additional technology stacks and engineering capabilities may be added over time.
 
 ---
 
@@ -624,11 +712,11 @@ Contributions, improvements, examples, and new skills are welcome.
 
 When adding a new skill, prefer capabilities that:
 
-1. solve a repeatable engineering problem
-2. produce structured and actionable output
-3. work well with existing software systems
-4. complement the ENFORGE workflow
-5. can be reused across projects
+1. Solve a repeatable engineering problem
+2. Produce structured and actionable output
+3. Work well with existing software systems
+4. Complement the ENFORGE workflow
+5. Can be reused across projects
 
 ---
 

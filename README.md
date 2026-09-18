@@ -1,374 +1,637 @@
 # ENFORGE
 
-**Engineering skills for understanding, planning, and executing software changes with AI coding agents.**
+**Engineering skills for turning business intent into structured, traceable, and implementation-ready software changes.**
 
-ENFORGE is a collection of reusable engineering skills designed to help AI coding agents work with existing software systems in a structured, traceable, and implementation-focused way.
+ENFORGE is a collection of reusable skills for AI coding agents that helps engineers move from **business intent and system understanding to technical planning, architecture review, and implementation**.
 
-Instead of jumping directly into code, ENFORGE promotes a simple workflow:
+Instead of jumping directly into code, ENFORGE encourages a structured engineering workflow:
 
 ```text
-Understand → Plan → Decide → Execute
+Business Intent
+      ↓
+System Understanding
+      ↓
+Delta Analysis
+      ↓
+Technical Planning
+      ↓
+Architecture Audit
+      ↓
+Refactoring / Implementation
 ```
 
-The goal is not to generate more code.
+The objective is simple:
 
-The goal is to make better engineering decisions before and during implementation.
+> **Understand first. Decide explicitly. Change deliberately.**
 
 ---
 
 ## Installation
 
-ENFORGE can be installed using the [`skills` CLI](https://skills.sh).
+Install ENFORGE using the [`skills`](https://skills.sh) CLI.
 
-### Install ENFORGE
-
-Install the complete ENFORGE skill set:
+### Install all skills
 
 ```bash
 npx skills add rfanazhari/enforge
 ```
 
-### Install a Specific Skill
+### Install a specific skill
 
-Install only the skill you need:
+```bash
+npx skills add rfanazhari/enforge --skill capability-doc-generator
+```
 
 ```bash
 npx skills add rfanazhari/enforge --skill flow-scanner
 ```
 
 ```bash
-npx skills add rfanazhari/enforge --skill tripack
+npx skills add rfanazhari/enforge --skill engineering-tripack-generator
 ```
 
 ```bash
-npx skills add rfanazhari/enforge --skill task-executor
+npx skills add rfanazhari/enforge --skill go-arch-auditor
 ```
 
-### Update ENFORGE
+```bash
+npx skills add rfanazhari/enforge --skill go-refactor-planner
+```
 
-Update your installed skills to the latest version:
+```bash
+npx skills add rfanazhari/enforge --skill spec-delta-analyzer
+```
+
+### Update installed skills
 
 ```bash
 npx skills update
 ```
 
-After installation or update, restart your AI coding agent so the latest skills are loaded.
+Restart your AI coding agent after installation or update so the latest skills are loaded.
 
 ---
 
-## Core Workflow
+# Skills
 
-ENFORGE currently consists of three core skills:
+ENFORGE currently provides six engineering skills.
 
-```text
-                  ┌─────────────────┐
-                  │  Flow Scanner   │
-                  │   Understand    │
-                  └────────┬────────┘
-                           │
-                           ▼
-                  ┌─────────────────┐
-                  │     Tripack     │
-                  │ Plan & Decide   │
-                  └────────┬────────┘
-                           │
-                           ▼
-                  ┌─────────────────┐
-                  │ Task Executor   │
-                  │    Execute      │
-                  └─────────────────┘
-```
+## 1. Capability Doc Generator
 
-### 1. Flow Scanner
+**Skill:** `capability-doc-generator`
 
-**Purpose:** Understand how an existing system actually works.
+Turns a business context, requirement, or feature description into a structured **business capability document** before implementation begins.
 
-Flow Scanner analyzes existing code and reconstructs execution flows.
-
-It can be used at different scopes:
+The output captures business rules using:
 
 ```text
-File
-Directory / Path
-Endpoint
-Feature Flow
+BR-XXX
+
+Given ...
+When ...
+Then ...
 ```
 
-Typical questions it helps answer:
+This is useful when the business intent needs to be explicit before any technical solution is designed.
 
-* Where does this request enter the system?
-* Which components are involved?
-* How does data move through the application?
-* Which repository, service, or domain logic is executed?
-* Where are side effects introduced?
-* What existing assumptions or dependencies should be preserved?
+### Use for
 
-The output describes the **current state of the system** rather than immediately proposing a redesign.
+* new business capabilities
+* feature requirements
+* business rule documentation
+* new modules
+* changes to existing business flows
+* capturing business intent before code exists
+
+### Trigger prefix
+
+```text
+capability-doc:
+```
+
+Example:
+
+```text
+capability-doc:
+
+A user can submit a survey only when the survey is open
+and the respondent has completed the required profile data.
+```
 
 ---
 
-### 2. Tripack
+## 2. Flow Scanner
 
-**Purpose:** Turn system understanding into an implementation-ready engineering plan.
+**Skill:** `flow-scanner`
 
-Tripack produces four complementary artifacts:
+Reads one or more Go flow files and reconstructs how the existing system behaves.
+
+It can analyze components such as:
+
+```text
+Controller
+Usecase
+Service
+Repository
+Domain
+Infrastructure
+```
+
+The generated documentation includes:
+
+* flow summary
+* execution tree
+* request / response
+* dependency table
+* important notes
+* relevant assumptions and behavior
+
+The skill can operate on a single file, multiple files, or a broader flow.
+
+### Use for
+
+* understanding an unfamiliar codebase
+* documenting existing behavior
+* tracing endpoint execution
+* understanding dependencies
+* establishing the current-state flow before planning changes
+
+### Trigger phrases
+
+```text
+scan flow
+document this flow
+read flow
+analyze flow
+explain this flow
+scan this controller
+scan this usecase
+```
+
+When `CLAUDE.md` or `AGENTS.md` exists at the repository root, it is treated as project context before analyzing the flow.
+
+---
+
+## 3. Specification Delta Analyzer
+
+**Skill:** `spec-delta-analyzer`
+
+Analyzes the delta between two markdown documents.
+
+A common use case is:
+
+```text
+Existing Flow / Journey
+          +
+New API Contract
+          ↓
+      Delta Report
+```
+
+The output identifies:
+
+* what changes
+* what can be reused
+* what is new
+* affected behavior
+* implementation implications
+
+### Use for
+
+* comparing an existing flow with a new API contract
+* understanding requirement changes
+* identifying reuse opportunities
+* identifying net-new implementation scope
+* preparing an implementation plan
+
+### Trigger phrases
+
+```text
+analyze delta
+buat delta report
+apa yang berubah
+compare these two docs
+what changed between
+```
+
+When an existing-flow document and API-contract document are available, this skill should be used before generating a technical implementation plan.
+
+---
+
+## 4. Engineering Tripack Generator
+
+**Skill:** `engineering-tripack-generator`
+
+Generates or revises the standard **engineering tripack** for feature work:
+
+```text
+technical-design.md
+tactical-strategy.md
+task-plan.md
+```
+
+It can also produce:
+
+```text
+decision-log.md
+```
+
+when the input contains important business-driven technical decisions.
+
+The skill is **stack-agnostic**.
+
+Rather than assuming a specific technology, it discovers the project's:
+
+* technology stack
+* architecture
+* conventions
+* engineering constraints
+
+from `CLAUDE.md`, `AGENTS.md`, and the codebase.
+
+### Use for
+
+* new features
+* adjustments to existing features
+* requirement changes
+* implementation planning
+* revising an existing tripack
+* re-syncing documentation after requirements change
+
+### Typical input
+
+The skill can work from:
+
+```text
+PRD
+FSD
+Analysis Document
+Delta Report
+Direct Feature Description
+Existing Tripack
+```
+
+### Output
 
 ```text
 Technical Design
+        ↓
 Tactical Strategy
+        ↓
 Task Plan
-Decision Logs
+        +
+Decision Log (when applicable)
 ```
 
-#### Technical Design
-
-Defines the intended technical solution and affected system boundaries.
-
-#### Tactical Strategy
-
-Explains how the change should be approached within the existing architecture and constraints.
-
-#### Task Plan
-
-Breaks the solution into concrete implementation tasks that can be executed sequentially.
-
-#### Decision Logs
-
-Capture important engineering decisions, trade-offs, assumptions, and rejected alternatives.
-
-Tripack bridges the gap between:
+### Trigger phrases
 
 ```text
-"Here is how the system works."
+generate tripack
+buat technical design
+buatkan task plan
+generate implementation plan
+buat rencana implementasi
+update tripack
+revisi technical design
+ada perubahan requirement
+re-sync doc
+adjust tripack
+tripack dari PRD/FSD ini
+```
 
-                ↓
+The skill should not be used for small bug fixes, document review without generation, or general architecture questions.
 
-"Here is how we should change it."
+---
 
-                ↓
+# Go Engineering Skills
 
-"Here are the exact tasks required."
+ENFORGE also provides Go-specific skills for architecture auditing and refactoring.
+
+These skills are intentionally separated:
+
+```text
+Audit
+  ↓
+Refactor Plan
+```
+
+This keeps architectural findings independent from the implementation plan.
+
+---
+
+## 5. Go Architecture Auditor
+
+**Skill:** `go-arch-auditor`
+
+Audits Go source files against engineering standards including:
+
+```text
+Clean Architecture
+DDD Tactical Design
+SOLID
+DRY
+Go Conventions
+```
+
+The audit focuses on identifying architectural and code-organization issues rather than immediately changing the code.
+
+### Trigger prefix
+
+```text
+go-arch-audit:
+```
+
+Example:
+
+```text
+go-arch-audit: services/domain/grpc_server/otp_handler.go
+```
+
+The architecture audit should be completed before generating a refactoring plan.
+
+---
+
+## 6. Go Refactor Planner
+
+**Skill:** `go-refactor-planner`
+
+Generates a structured refactoring plan based on:
+
+* Go architecture audit findings
+* a provided audit report
+* direct inspection of a Go source file
+
+The output is a prioritized and dependency-aware task plan saved as a markdown document.
+
+### Trigger prefix
+
+```text
+go-refactor-plan:
+```
+
+Example:
+
+```text
+go-refactor-plan: documents/audit/audit-otp_mobile_request_msisdn.md
+```
+
+It can also accept a Go source file directly:
+
+```text
+go-refactor-plan: services/domain/grpc_server/otp_handler.go
+```
+
+When no audit report is available, the Go Architecture Auditor should be run first.
+
+---
+
+# Engineering Workflow
+
+The skills are designed to work independently, but their real value comes from combining them into an engineering workflow.
+
+## New Capability
+
+For a new business capability:
+
+```text
+Business Context
+      ↓
+Capability Doc Generator
+      ↓
+Business Rules
+      ↓
+Engineering Tripack Generator
+      ↓
+Task Plan
+      ↓
+Implementation
 ```
 
 ---
 
-### 3. Task Executor
+## Change to an Existing Flow
 
-**Purpose:** Execute an existing task plan without losing the original engineering intent.
+For changes to an existing system:
 
-Task Executor consumes the implementation plan produced during the planning stage and carries out the defined work.
-
-The emphasis is on:
-
-* following the agreed scope
-* preserving architectural boundaries
-* implementing tasks in a controlled sequence
-* validating changes against the plan
-* avoiding unnecessary refactoring
-* keeping implementation aligned with documented decisions
-
-The executor is not intended to replace engineering judgment.
-
-It reduces the gap between **a well-defined plan and its implementation**.
+```text
+Existing Code
+      ↓
+Flow Scanner
+      ↓
+Current-State Flow
+      ↓
+New Requirement / API Contract
+      ↓
+Specification Delta Analyzer
+      ↓
+Delta Report
+      ↓
+Engineering Tripack Generator
+      ↓
+Task Plan
+      ↓
+Implementation
+```
 
 ---
 
-## Design Principles
+## Go Refactoring
+
+For architecture and code-quality improvements:
+
+```text
+Go Source
+    ↓
+Go Architecture Auditor
+    ↓
+Audit Findings
+    ↓
+Go Refactor Planner
+    ↓
+Prioritized Refactoring Tasks
+    ↓
+Implementation
+```
+
+The separation is intentional.
+
+The audit answers:
+
+> **What is wrong or inconsistent with the engineering standards?**
+
+The refactor planner answers:
+
+> **What should be changed, and in what order?**
+
+---
+
+# Recommended End-to-End Workflow
+
+For a substantial feature or system change, ENFORGE can be used as a complete pipeline:
+
+```text
+┌──────────────────────┐
+│   Business Context   │
+└──────────┬───────────┘
+           ↓
+┌──────────────────────────┐
+│ Capability Doc Generator │
+└──────────┬───────────────┘
+           ↓
+┌──────────────────────┐
+│    Existing System  │
+└──────────┬───────────┘
+           ↓
+┌──────────────────────┐
+│    Flow Scanner      │
+└──────────┬───────────┘
+           ↓
+┌──────────────────────┐
+│ Spec Delta Analyzer  │
+└──────────┬───────────┘
+           ↓
+┌────────────────────────────┐
+│ Engineering Tripack        │
+│ Design / Strategy / Tasks  │
+└──────────┬─────────────────┘
+           ↓
+┌──────────────────────┐
+│ Architecture Audit  │
+│   (when applicable)  │
+└──────────┬───────────┘
+           ↓
+┌──────────────────────┐
+│ Refactor / Implement │
+└──────────────────────┘
+```
+
+Not every task requires every skill.
+
+The workflow should be adapted to the nature of the change.
+
+---
+
+# Design Principles
 
 ### Understand Before Changing
 
 Existing behavior should be understood before proposing modifications.
 
-### Plan Before Implementing
+### Make Business Rules Explicit
 
-Complex changes benefit from an explicit technical plan before code changes begin.
+Business intent should not exist only implicitly in code or conversations.
+
+### Separate Current State From Target State
+
+Documentation of existing behavior should remain distinct from proposed changes.
 
 ### Separate Decisions From Execution
 
-Architectural decisions should remain visible instead of being hidden inside implementation steps.
+Important engineering decisions should be explicit and traceable.
+
+### Plan Before Implementation
+
+Complex changes should have a clear implementation strategy before code changes begin.
+
+### Audit Before Refactoring
+
+Refactoring should be driven by identified problems and architectural intent rather than arbitrary code cleanup.
 
 ### Prefer Focused Changes
 
-Avoid unnecessary refactoring when the requested change can be implemented cleanly within the existing system.
+Avoid unnecessary changes outside the intended scope.
 
 ### Preserve Context
 
-Important assumptions and decisions should remain available to both humans and future AI agents.
-
-### Optimize for Maintainability
-
-The objective is not merely to produce working code.
-
-The objective is to produce changes that other engineers can understand, review, maintain, and extend.
+Engineering context should remain useful to both humans and AI agents throughout the lifecycle of a change.
 
 ---
 
-## Current Technology Support
+# Technology Support
 
-ENFORGE currently focuses on **Go-based backend systems**.
+ENFORGE currently includes:
 
-The skill architecture is intentionally designed to remain technology-agnostic where possible, allowing additional technology-specific skills to be introduced over time.
+```text
+Technology-Agnostic
+├── capability-doc-generator
+├── engineering-tripack-generator
+└── spec-delta-analyzer
+
+Go
+├── flow-scanner
+├── go-arch-auditor
+└── go-refactor-planner
+```
+
+The architecture is designed to support additional technology-specific skills in the future.
 
 ---
 
-## Repository Structure
+# Repository Structure
 
 ```text
 enforge/
 ├── skills/
+│   ├── capability-doc-generator/
 │   ├── flow-scanner/
-│   ├── tripack/
-│   └── task-executor/
+│   ├── engineering-tripack-generator/
+│   ├── go-arch-auditor/
+│   ├── go-refactor-planner/
+│   └── spec-delta-analyzer/
 │
 ├── docs/
 ├── examples/
 └── README.md
 ```
 
-Each skill is independently reusable while also working as part of the complete ENFORGE workflow.
+Each skill is independently installable while remaining composable with the broader ENFORGE workflow.
 
 ---
 
-## Recommended Usage
+# Philosophy
 
-For a non-trivial change in an existing codebase:
+AI can make software development dramatically faster.
+
+But speed without context can amplify mistakes.
+
+A coding agent can modify thousands of lines in minutes. The hard part is knowing **what should change, what should not change, and why**.
+
+ENFORGE is built around that problem.
 
 ```text
-1. Scan
-   ↓
-2. Understand the existing flow
-   ↓
-3. Build the engineering plan
-   ↓
-4. Record important decisions
-   ↓
-5. Execute the task plan
-   ↓
-6. Validate the implementation
+Understand the intent.
+Understand the system.
+Make the decisions explicit.
+Plan the change.
+Then write the code.
 ```
 
-For example:
-
-```text
-Feature Request
-      │
-      ▼
-Flow Scanner
-      │
-      ▼
-Existing System Understanding
-      │
-      ▼
-Tripack
- ┌────┼───────────────┐
- ▼    ▼               ▼
-Design Strategy    Task Plan
- └────────┬───────────┘
-          ▼
-   Decision Logs
-          │
-          ▼
-   Task Executor
-          │
-          ▼
-     Code Changes
-```
-
-This workflow is particularly useful when working with unfamiliar or legacy systems where the largest risk is not writing code, but misunderstanding the system before changing it.
+> **Don't just generate code. Forge the change.**
 
 ---
 
-## Example
-
-A typical workflow might look like:
-
-```text
-Request:
-"Move price plan handling from registration-level assumptions
-to a survey-level snapshot."
-
-        ↓
-
-Flow Scanner
-→ trace current price plan flow
-→ identify affected endpoints
-→ inspect domain/application/repository interactions
-→ document existing assumptions
-
-        ↓
-
-Tripack
-→ define technical design
-→ define migration/change strategy
-→ produce task plan
-→ record architectural decisions
-
-        ↓
-
-Task Executor
-→ implement tasks sequentially
-→ update affected components
-→ add/update tests
-→ validate implementation against the plan
-```
-
-The important distinction is that implementation starts **after the system and solution have been made explicit**.
-
----
-
-## Intended Use
-
-ENFORGE is designed for:
-
-* AI-assisted software development
-* backend engineering
-* existing codebase analysis
-* architectural planning
-* refactoring
-* feature implementation
-* engineering documentation
-* repeatable development workflows
-
-It can be used by individual developers, engineering teams, or AI coding agents.
-
----
-
-## Philosophy
-
-Software engineering is rarely difficult because writing the code is impossible.
-
-It is difficult because the system already exists.
-
-There are constraints, assumptions, historical decisions, dependencies, and behaviors that are not always visible from a single file.
-
-ENFORGE is built around a simple idea:
-
-> **Understand the system. Make the decisions explicit. Then change it.**
-
----
-
-## Status
+# Status
 
 ENFORGE is under active development.
 
-The current focus is improving the workflow for Go-based backend systems while keeping the overall skill architecture extensible for additional technology stacks.
+The current implementation includes technology-agnostic engineering workflow skills and Go-specific architecture skills, with additional technology stacks planned for future development.
 
 ---
 
-## Contributing
+# Contributing
 
 Contributions, improvements, examples, and new skills are welcome.
 
-When introducing a new skill, prefer skills that:
+When adding a new skill, prefer capabilities that:
 
 1. solve a repeatable engineering problem
-2. produce a clear and actionable output
+2. produce structured and actionable output
 3. work well with existing software systems
-4. complement the existing ENFORGE workflow
-5. remain useful across different projects
+4. complement the ENFORGE workflow
+5. can be reused across projects
 
 ---
 
-## License
+# License
 
 See [LICENSE](LICENSE) for details.

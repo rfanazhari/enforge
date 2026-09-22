@@ -1,5 +1,11 @@
 # ENFORGE
 
+<p align="center">
+  <img src="./assets/enforge-hero.png" alt="ENFORGE - AI Coding Agents Skills Collection" />
+</p>
+
+> Don't just generate code. Forge the change.
+
 **Engineering skills for turning business intent into structured, traceable, and implementation-ready software changes.**
 
 ENFORGE is a collection of reusable skills for AI coding agents that helps engineers move from **business intent and system understanding to technical planning, architecture review, implementation, and delivery**.

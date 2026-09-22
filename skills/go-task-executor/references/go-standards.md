@@ -1,11 +1,5 @@
 # Go Backend Coding Standards (extracted, execution-relevant subset)
 
-Source: internal `BE_Coding_Standards.md`. This file keeps only the sections
-needed to write or modify Go code — package naming, structs/constructors,
-error handling, testing/TDD, Clean Architecture rules, DDD tactical design,
-folder layout, and observability. Language-agnostic sections (SQL, TS, PHP,
-Python, Lua) are intentionally omitted.
-
 ## Table of Contents
 1. Naming Conventions
 2. Struct / Constructor Rules
@@ -18,6 +12,7 @@ Python, Lua) are intentionally omitted.
 9. DDD Tactical Design
 10. Log Standardization
 11. Observability (tracing spans)
+12. SonarQube-Derived Conventions
 
 ---
 
@@ -183,3 +178,82 @@ Every layer that does real work should open a span, named by convention:
 
 - Propagate `traceparent` (W3C Trace Context) across HTTP, gRPC metadata, and MQ message headers; keep the same `trace-id`, new `span-id` per hop.
 - Mask/exclude PII in any span attributes or logs.
+
+## 12. SonarQube-Derived Conventions
+
+These come from recurring SonarQube (`godre`/`go` rule set) findings in real
+projects, not the original `BE_Coding_Standards.md`. Apply the mechanical
+ones (§12.1, §12.2) by default whenever writing new Go code. Treat §12.3 as
+a decision rule, not a mechanical rewrite — it carries real behavioral risk.
+
+### 12.1 Single-method interface naming (`godre:S8196`)
+
+A single-method interface should be named after the capability, ending in
+`-er`, matching (or closely echoing) the method name — not a generic
+`<Domain>Usecase`/`<Domain>Service` label.
+
+```go
+// Avoid
+type EmailOtpUsecase interface {
+    SendOtp(ctx context.Context, ...) error
+}
+
+// Prefer
+type OtpSender interface {
+    SendOtp(ctx context.Context, ...) error
+}
+```
+
+Apply this by default to every new single-method interface you write. Don't
+mass-rename existing interfaces as a side effect of an unrelated task —
+renaming a public interface is a breaking change for every implementer and
+caller; that's its own dedicated task, not incidental cleanup.
+
+### 12.2 Group consecutive parameters of the same type (`godre:S8209`)
+
+```go
+// Avoid
+func createNotificationProperty(propertyName string, value string) rbmq.NotificationProperty
+
+// Prefer
+func createNotificationProperty(propertyName, value string) rbmq.NotificationProperty
+```
+
+Apply this by default in any new function signature. Purely syntactic — no
+behavioral risk — safe to also tidy up in an existing signature you're
+already touching for the task at hand.
+
+### 12.3 Context reuse vs. a new background context (`godre:S8239`) — verify before applying
+
+Don't treat "replace `context.Background()` with the incoming `ctx`" as a
+mechanical fix. First check **why** the background context was created:
+
+- If the code path is synchronous and finishes within the caller's request
+  lifetime → reusing `ctx` is correct and safe. Apply it.
+- If the code spawns a goroutine that must **outlive** the caller (a genuine
+  fire-and-forget job, e.g. kicked off from an HTTP handler that returns
+  before the goroutine finishes) → swapping in the live `ctx` can cause the
+  work to be cancelled the moment the parent request context is cancelled
+  or completes. In that case the original `context.Background()` may be
+  intentional. The safer fix is usually a **detached context that still
+  carries what's needed** (trace ID, request-scoped values) via
+  `context.WithoutCancel(ctx)` (Go 1.21+) or by manually copying the
+  specific values into a fresh `context.Background()` — not a blind ctx
+  swap, and not leaving it broken either.
+- When you can't tell which case applies from the code alone, say so
+  explicitly in the task's execution summary instead of guessing.
+
+Because this changes runtime behavior (context lifetime, cancellation
+propagation), treat any task targeting this rule as **legacy mode** by
+default — write a characterization test for the current behavior before
+changing it (§5) — even if the user didn't explicitly tag it, unless they
+say otherwise.
+
+### 12.4 Unresolved TODO comments (`go:S1135`)
+
+Not a rule this skill enforces proactively — resolving or removing an
+existing TODO is a scope decision for the user, not implicit hygiene. Just
+don't introduce new unresolved TODOs as a byproduct of a task this skill
+executes. If a task's scope doesn't cover an existing TODO you encounter
+along the way, leave it untouched and mention it exists in the summary
+rather than silently deleting or silently fixing it.

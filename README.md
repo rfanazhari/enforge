@@ -2,7 +2,7 @@
 
 **Engineering skills for turning business intent into structured, traceable, and implementation-ready software changes.**
 
-ENFORGE is a collection of reusable skills for AI coding agents that helps engineers move from **business intent and system understanding to technical planning, architecture review, and implementation**.
+ENFORGE is a collection of reusable skills for AI coding agents that helps engineers move from **business intent and system understanding to technical planning, architecture review, implementation, and delivery**.
 
 Instead of jumping directly into code, ENFORGE encourages a structured engineering workflow:
 
@@ -18,6 +18,8 @@ Technical Planning
 Architecture Audit
       ↓
 Implementation / Refactoring
+      ↓
+Ticket / Delivery
 ```
 
 The objective is simple:
@@ -66,6 +68,10 @@ npx skills add rfanazhari/enforge --skill go-refactor-planner
 npx skills add rfanazhari/enforge --skill go-task-executor
 ```
 
+```bash
+npx skills add rfanazhari/enforge --skill ticket-generator
+```
+
 ### Update installed skills
 
 ```bash
@@ -78,7 +84,7 @@ Restart your AI coding agent after installation or update so the latest skills a
 
 # Skills
 
-ENFORGE currently provides seven engineering skills.
+ENFORGE currently provides eight engineering skills.
 
 ## 1. Capability Doc Generator
 
@@ -450,6 +456,64 @@ This distinction allows implementation behavior to account for whether the code 
 
 ---
 
+# Delivery Skills
+
+ENFORGE also includes a skill for closing the loop after implementation — turning the actual work done into a ticket, before it gets pushed.
+
+---
+
+## 8. Ticket Generator
+
+**Skill:** `ticket-generator`
+
+Generates a ticket — **title + description, markdown only** — from an engineering tripack, a raw report/finding document (e.g. a dependency-upgrade or SonarQube finding), or directly from the actual code change (diff / branch comparison) when no docs exist at all.
+
+Unlike the other skills, it is meant to run **after** implementation — right before pushing to a branch — or **retroactively**, when work was already committed or pushed but no ticket was ever written.
+
+The ticket reflects what was **actually changed**, not just what was planned. When a tripack is available, its planned scope is cross-checked against the real diff, and any drift between the two is called out explicitly rather than silently trusted.
+
+### Input scenarios
+
+```text
+1. Docs-only    — tripack/finding provided, no implementation yet
+2. Docs + Diff  — tripack/finding + implementation done, not yet pushed
+3. Retroactive  — already committed/pushed, ticket never made;
+                  diff compared against a base branch
+```
+
+Required input depends on the detected scenario (`doc_path`, `base_branch`, or both), plus `output_language` (`en` or `id`), which is always required.
+
+### QA Impact
+
+When the change touches observable behavior, the output includes a QA Impact table:
+
+```text
+| No | Area | Yang dicek | Expected |
+```
+
+Purely internal changes — refactors with no contract change, dependency bumps with no breaking impact — skip this section entirely instead of padding it with a placeholder row.
+
+### Use for
+
+* Documenting what was actually implemented, right before push
+* Writing a ticket for a change that was committed or pushed without one
+* Producing a QA-ready regression scope alongside the ticket
+* Closing out a `go-task-executor` run with a ticket for the tracker
+
+### Trigger phrases
+
+```text
+buat tiket
+generate ticket
+write a ticket for this change
+ticket dari perubahan ini
+ticket dari finding ini
+```
+
+This does not replace `engineering-tripack-generator`'s task-plan, which is for planning *before* implementation. Ticket Generator documents *after*.
+
+---
+
 # Engineering Workflows
 
 The skills are designed to work independently, but their real value comes from combining them into repeatable engineering workflows.
@@ -472,6 +536,10 @@ Task Plan
 Go Task Executor
       ↓
 Code + Tests
+      ↓
+Ticket Generator
+      ↓
+Ticket (ready for push)
 ```
 
 ---
@@ -500,6 +568,10 @@ Task Plan
 Go Task Executor
       ↓
 Code + Tests
+      ↓
+Ticket Generator
+      ↓
+Ticket (ready for push)
 ```
 
 ---
@@ -522,6 +594,10 @@ Prioritized Refactoring Tasks
 Go Task Executor
     ↓
 Refactored Code + Tests
+    ↓
+Ticket Generator
+    ↓
+Ticket (ready for push)
 ```
 
 The separation is intentional.
@@ -537,6 +613,27 @@ The refactor planner answers:
 The task executor answers:
 
 > **How should those changes be implemented and validated in code?**
+
+The ticket generator answers:
+
+> **What actually changed, and what does it mean for testing?**
+
+---
+
+## Undocumented / Retroactive Changes
+
+For work that was already committed or pushed without a ticket:
+
+```text
+Already Committed / Pushed Code
+      ↓
+Ticket Generator
+  (base_branch compare)
+      ↓
+Ticket (title + description)
+```
+
+No prior tripack, audit, or task plan is required for this path — Ticket Generator can reconstruct scope directly from the diff and commit history, flagged as reconstructed rather than verified.
 
 ---
 
@@ -581,6 +678,15 @@ For a substantial feature or system change, ENFORGE can be used as a complete en
            ↓
 ┌──────────────────────┐
 │   Code + Tests       │
+└──────────┬───────────┘
+           ↓
+┌──────────────────────┐
+│  Ticket Generator     │
+└──────────┬───────────┘
+           ↓
+┌──────────────────────┐
+│  Ticket (ready to     │
+│      push)            │
 └──────────────────────┘
 ```
 
@@ -624,6 +730,10 @@ Implementation should include appropriate tests, especially when executing plann
 
 Avoid unnecessary changes outside the intended scope.
 
+### Document What Actually Happened
+
+Delivery artifacts (tickets) should reflect the real, verified change — not just the original intent — and any drift between the two should be surfaced, not hidden.
+
 ### Preserve Context
 
 Engineering context should remain useful to both humans and AI agents throughout the lifecycle of a change.
@@ -638,7 +748,8 @@ ENFORGE currently includes technology-agnostic engineering workflow skills and G
 Technology-Agnostic
 ├── capability-doc-generator
 ├── engineering-tripack-generator
-└── spec-delta-analyzer
+├── spec-delta-analyzer
+└── ticket-generator
 
 Go
 ├── flow-scanner
@@ -662,7 +773,8 @@ enforge/
 │   ├── engineering-tripack-generator/
 │   ├── go-arch-auditor/
 │   ├── go-refactor-planner/
-│   └── go-task-executor/
+│   ├── go-task-executor/
+│   └── ticket-generator/
 │
 ├── docs/
 ├── examples/
@@ -680,7 +792,7 @@ AI can make software development dramatically faster.
 
 But speed without context can amplify mistakes.
 
-A coding agent can modify thousands of lines in minutes. The hard part is knowing **what should change, what should not change, and why**.
+A coding agent can modify thousands of lines in minutes. The hard part is knowing **what should change, what should not change, and why** — and, once it's done, **what actually changed**.
 
 ENFORGE is built around that problem.
 
@@ -689,7 +801,8 @@ Understand the intent.
 Understand the system.
 Make the decisions explicit.
 Plan the change.
-Then write the code.
+Write the code.
+Document what really happened.
 ```
 
 > **Don't just generate code. Forge the change.**
@@ -700,7 +813,7 @@ Then write the code.
 
 ENFORGE is under active development.
 
-The current implementation includes technology-agnostic engineering workflow skills and Go-specific architecture, planning, and execution skills.
+The current implementation includes technology-agnostic engineering workflow skills, Go-specific architecture, planning, and execution skills, and a delivery skill for post-implementation ticket generation.
 
 Additional technology stacks and engineering capabilities may be added over time.
 

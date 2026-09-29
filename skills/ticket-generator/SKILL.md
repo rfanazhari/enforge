@@ -51,13 +51,13 @@ QA Impact is **optional in every scenario** — including Scenario 1/2 with a tr
 |----|------|-----------|----------|-----------------|
 | 1  | ...  | ...       | ...      | QA Engineer |
 
-When `output_language` is `en`, translate the headers (`Yang dicek` → `What to check`, `Dikerjakan oleh` → `Owner`, `Expected` stays `Expected`). Role values stay the fixed tokens `QA Engineer` and `QA Biasa` in both languages — they are team roles, not prose.
+When `output_language` is `en`, translate the headers (`Yang dicek` → `What to check`, `Dikerjakan oleh` → `Owner`, `Expected` stays `Expected`). Role values stay the fixed tokens `QA Engineer` and `QA` in both languages — they are team roles, not prose.
 
 - **Area**: the module/flow/endpoint actually touched (from Step 2's flow mapping).
 - **Yang dicek**: the specific scenario to verify — prioritize edge cases exposed by the change (new-user path, old-data path, empty/zero cases), not just the happy path.
 - **Expected**: the expected outcome per Acceptance Criteria — each AC can usually be split into 1+ regression rows.
 - **Dikerjakan oleh**: exactly one owner per row. Assign it from the rules below. Do not ask the user, and do not leave the cell blank or write both roles in one cell. If one scenario needs both a product-surface check and a data/contract check, split it into two rows.
-- If the diff is something like a dependency upgrade with no direct behavior change but still warrants a smoke check, one row is enough (e.g. Area = service name, Yang dicek = "smoke test after upgrade", Expected = "no errors, behavior unchanged", Dikerjakan oleh = `QA Biasa`).
+- If the diff is something like a dependency upgrade with no direct behavior change but still warrants a smoke check, one row is enough (e.g. Area = service name, Yang dicek = "smoke test after upgrade", Expected = "no errors, behavior unchanged", Dikerjakan oleh = `QA`).
 
 **Who owns the row**
 
@@ -68,13 +68,13 @@ When `output_language` is `en`, translate the headers (`Yang dicek` → `What to
 - technical data edges: empty, zero, null, legacy/old records, partial records
 - idempotency, retry, concurrency, or ordering
 
-`QA Biasa` when the check is product behavior a functional tester can verify without inspecting data stores, payloads, or logs:
+`QA` when the check is product behavior a functional tester can verify without inspecting data stores, payloads, or logs:
 
 - user-facing flow, UI, copy, or navigation
 - business acceptance stated in user language
 - smoke that behavior is unchanged, with no data inspection
 
-If a row still does not fit cleanly, assign `QA Engineer` whenever any data or contract inspection is required; otherwise assign `QA Biasa`.
+If a row still does not fit cleanly, assign `QA Engineer` whenever any data or contract inspection is required; otherwise assign `QA`.
 
 ## Step 4 — Generate the Ticket
 

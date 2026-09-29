@@ -491,10 +491,10 @@ Required input depends on the detected scenario (`doc_path`, `base_branch`, or b
 
 ### QA Impact
 
-When the change touches observable behavior, the output includes a QA Impact table:
+When the change touches observable behavior, the output includes a QA Impact table. Each row names who verifies it: `QA Engineer` for checks that need data, contract, or runtime inspection, and `QA Biasa` for product-surface checks a functional tester can close without that inspection.
 
 ```text
-| No | Area | Yang dicek | Expected |
+| No | Area | Yang dicek | Expected | Dikerjakan oleh |
 ```
 
 Purely internal changes — refactors with no contract change, dependency bumps with no breaking impact — skip this section entirely instead of padding it with a placeholder row.

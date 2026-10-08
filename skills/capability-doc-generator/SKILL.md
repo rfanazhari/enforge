@@ -26,7 +26,8 @@ This skill writes **one capability document at a time**, describing intended beh
 Do NOT do these, even if asked mid-task — offer them as separate follow-up work instead:
 
 - Write or update a **journey document** (`UJ-00N`). Journeys reference capabilities, not
-  the other way round, and they must be written after their capabilities exist.
+  the other way round — that is the `journey` skill's job. Point the user there (compose
+  mode once the capabilities exist; discovery mode to find out which ones are needed).
 - Write to a `policies/` folder. Output always goes to `capabilities/`.
 - Claim the rules are implemented. See "Honest status" below.
 - Write the implementation code.

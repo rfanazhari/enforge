@@ -51,6 +51,10 @@ npx skills add rfanazhari/enforge --skill capability-doc-generator
 ```
 
 ```bash
+npx skills add rfanazhari/enforge --skill journey
+```
+
+```bash
 npx skills add rfanazhari/enforge --skill flow-scanner
 ```
 
@@ -90,7 +94,7 @@ Restart your AI coding agent after installation or update so the latest skills a
 
 # Skills
 
-ENFORGE currently provides eight engineering skills.
+ENFORGE currently provides nine engineering skills.
 
 ## 1. Capability Doc Generator
 
@@ -136,7 +140,65 @@ and the respondent has completed the required profile data.
 
 ---
 
-## 2. Flow Scanner
+## 2. Journey
+
+**Skill:** `journey`
+
+Composes business capabilities into an end-to-end **user journey document** (`UJ-00N`) for one primary actor pursuing one business goal — still before any code exists.
+
+The journey is a parent *by reference*:
+
+```text
+UJ-00N   (journey)
+  └── CAP-xxx  (capability)
+        └── BR-xxx  (business rule)
+```
+
+Each step names the actor, the business action, the capability that owns it, the `BR-XXX` rules that govern it, and the outcome. Rule text is never duplicated — the journey points to it.
+
+The skill works at pure business level: actors, intents, actions, outcomes, rules. No services, APIs, tables, or screens — those are deferred to `engineering-tripack-generator`.
+
+### Modes
+
+Mode is the mandatory first input. If it is not given, the skill asks before doing anything else.
+
+```text
+compose    — capability docs exist; stitch them into a journey,
+             flag conflicts between capabilities and gaps in coverage
+discovery  — start from the business doc; produce the journey plus a
+             "capabilities needed" list for capability-doc-generator
+```
+
+### Use for
+
+* Chaining several capabilities into one business flow
+* Checking that the rules of neighbouring capabilities line up
+* Finding out which capability docs still need to be written
+* Recording cross-journey dependencies (data produced by another actor's flow)
+* Giving `engineering-tripack-generator` an end-to-end business input
+
+### Trigger prefix
+
+```text
+journey:
+```
+
+Example:
+
+```text
+journey: compose
+
+Business doc: docs/prd/merchant-first-payout.md
+Capabilities: docs/business/capabilities/merchant-onboarding.md,
+              docs/business/capabilities/kyc-verification.md,
+              docs/business/capabilities/payout-request.md
+```
+
+One journey has exactly one primary actor. Other roles appear only as supporting actors on individual steps; a dependency on another actor's flow is recorded as a cross-journey dependency (`UJ-00M`), not as a second actor.
+
+---
+
+## 3. Flow Scanner
 
 **Skill:** `flow-scanner`
 
@@ -188,7 +250,7 @@ When `CLAUDE.md` or `AGENTS.md` exists at the repository root, it is treated as 
 
 ---
 
-## 3. Specification Delta Analyzer
+## 4. Specification Delta Analyzer
 
 **Skill:** `spec-delta-analyzer`
 
@@ -234,7 +296,7 @@ When an existing-flow document and API-contract document are available, this ski
 
 ---
 
-## 4. Engineering Tripack Generator
+## 5. Engineering Tripack Generator
 
 **Skill:** `engineering-tripack-generator`
 
@@ -337,7 +399,7 @@ This separates architectural findings from planning and implementation.
 
 ---
 
-## 5. Go Architecture Auditor
+## 6. Go Architecture Auditor
 
 **Skill:** `go-arch-auditor`
 
@@ -369,7 +431,7 @@ The architecture audit should be completed before generating a refactoring plan.
 
 ---
 
-## 6. Go Refactor Planner
+## 7. Go Refactor Planner
 
 **Skill:** `go-refactor-planner`
 
@@ -403,7 +465,7 @@ When no audit report is available, the Go Architecture Auditor should be run fir
 
 ---
 
-## 7. Go Task Executor
+## 8. Go Task Executor
 
 **Skill:** `go-task-executor`
 
@@ -468,7 +530,7 @@ ENFORGE also includes a skill for closing the loop after implementation — turn
 
 ---
 
-## 8. Ticket Generator
+## 9. Ticket Generator
 
 **Skill:** `ticket-generator`
 
@@ -535,6 +597,10 @@ Capability Doc Generator
       ↓
 Business Rules
       ↓
+Journey (compose)
+      ↓
+User Journey (UJ → CAP → BR)
+      ↓
 Engineering Tripack Generator
       ↓
 Task Plan
@@ -547,6 +613,36 @@ Ticket Generator
       ↓
 Ticket (ready for push)
 ```
+
+The `journey` step is optional for a single isolated capability. Use it whenever the change spans more than one capability, so conflicts between their rules are found before the technical design is written.
+
+---
+
+## Journey Discovery
+
+When the starting point is a business document and it is not yet clear which capabilities need to exist:
+
+```text
+Business Document
+      ↓
+Journey (discovery)
+      ↓
+Draft Journey + "Capabilities Needed"
+      ↓
+Capability Doc Generator  (once per capability needed)
+      ↓
+Business Rules
+      ↓
+Journey (compose, re-run)
+      ↓
+User Journey (UJ → CAP → BR)
+      ↓
+Engineering Tripack Generator
+      ↓
+Task Plan
+```
+
+Discovery answers *which capabilities are needed*; compose answers *whether they fit together*. The journey document names the recommended next skill at the end of each run.
 
 ---
 
@@ -579,6 +675,8 @@ Ticket Generator
       ↓
 Ticket (ready for push)
 ```
+
+The current-state document fed to Specification Delta Analyzer can be a Flow Scanner output or a `UJ-00N` journey produced by `journey` in compose mode.
 
 ---
 
@@ -655,6 +753,11 @@ For a substantial feature or system change, ENFORGE can be used as a complete en
 ┌──────────────────────────┐
 │ Capability Doc Generator │
 └──────────┬───────────────┘
+           ↓
+┌──────────────────────┐
+│  Journey (compose)   │
+│   UJ → CAP → BR      │
+└──────────┬───────────┘
            ↓
 ┌──────────────────────┐
 │   Existing System    │
@@ -753,6 +856,7 @@ ENFORGE currently includes technology-agnostic engineering workflow skills and G
 ```text
 Technology-Agnostic
 ├── capability-doc-generator
+├── journey
 ├── engineering-tripack-generator
 ├── spec-delta-analyzer
 └── ticket-generator
@@ -774,6 +878,7 @@ The architecture is designed to support additional technology-specific skills in
 enforge/
 ├── skills/
 │   ├── capability-doc-generator/
+│   ├── journey/
 │   ├── flow-scanner/
 │   ├── spec-delta-analyzer/
 │   ├── engineering-tripack-generator/

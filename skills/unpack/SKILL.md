@@ -97,13 +97,23 @@ For technical-only references, describe supported operations neutrally and mark
 missing business context. Do not invent actors, goals, or product rules.
 
 Split work when responsibility or independently verifiable acceptance differs.
+This also applies within one scope when services or shared packages have
+separately owned, independently acceptable deliverables. Each item should have
+a clear responsibility and completion boundary. Keep one shared contribution
+when scenarios reuse the same deliverable; scenario grouping alone is not a
+reason to duplicate work.
 For combined FE/BE/Mobile scope, keep a shared outcome group and separate work
 items where each scope has its own deliverable. Do not split by technical layer
 or force one work item per endpoint or AC.
 
 Include necessary engineering support within the selected scope and explain its
-contribution in stakeholder language. Keep handlers, repositories, workers,
-schemas, and other implementation mechanics in technical references.
+contribution clearly. Name technical items by the concrete change and the component
+or operation involved, using source-supported mechanisms when they clarify the work.
+Keep the benefit in Purpose rather than using it as a substitute for the work name.
+Technical acceptance criteria are appropriate for technical deliverables. Keep groups
+understandable through their outcomes; use the writing guide to choose item detail.
+Leave implementation mechanics that do not define the deliverable or its
+acceptance in technical references.
 Reference shared technical tasks from multiple work items where needed;
 repeated references do not create additional effort.
 
@@ -140,6 +150,19 @@ Keep outside-scope work as dependencies, not assigned delivery work items.
 A fully planned BE contribution must not imply that an entire dashboard flow
 or end-to-end AC is covered. State missing contributions at group level.
 
+In each item's Dependencies field, distinguish prerequisites to start or complete
+that contribution from dependencies for end-to-end acceptance. State the required
+result or stage; do not make an entire item a prerequisite when only part is needed.
+Check prerequisite relationships for cycles. Surface a source-plan cycle as a gap
+rather than inventing an execution order to hide it.
+
+Keep the full explanation of each open issue in one register in section 4,
+using stable local IDs when the sources have none. Distinguish unresolved decisions
+from provisioning or validation prerequisites. Identify whether each issue blocks
+implementation, acceptance, or production activation; more than one may apply.
+Elsewhere cite its ID and local impact. Highlight material blockers in the summary
+without repeating their full history. Fully planned work may still have open gates.
+
 ## 5. Preserve identities on revision
 
 Use `DB-001`, `DB-002`, and so on for new delivery work items. Keep existing
@@ -171,6 +194,8 @@ Before returning or saving:
 - Confirm every relevant requirement has a coverage row and every pending
   decision names its acceptance impact.
 - Check that scope responsibility, group acceptance, and dependencies agree.
+- Check independently assignable boundaries, prerequisite stages, and shared
+  contributions for accidental duplication or double counting.
 - Preserve source meaning, quantities, and ID relationships after editing.
 - Check that no planned behavior is described as verified implementation.
 

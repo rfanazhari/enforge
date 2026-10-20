@@ -67,6 +67,10 @@ npx skills add rfanazhari/enforge --skill engineering-tripack-generator
 ```
 
 ```bash
+npx skills add rfanazhari/enforge --skill unpack
+```
+
+```bash
 npx skills add rfanazhari/enforge --skill go-arch-auditor
 ```
 
@@ -94,7 +98,7 @@ Restart your AI coding agent after installation or update so the latest skills a
 
 # Skills
 
-ENFORGE currently provides nine engineering skills.
+ENFORGE currently provides ten engineering skills.
 
 ## 1. Capability Doc Generator
 
@@ -526,11 +530,79 @@ This distinction allows implementation behavior to account for whether the code 
 
 # Delivery Skills
 
-ENFORGE also includes a skill for closing the loop after implementation — turning the actual work done into a ticket, before it gets pushed.
+ENFORGE includes Unpack for reviewing planned delivery after a tripack exists,
+and Ticket Generator for documenting actual changes after implementation.
 
 ---
 
-## 9. Ticket Generator
+## 9. Unpack
+
+**Skill:** `unpack`
+
+Turns existing engineering tripacks and requirement references into a delivery
+breakdown for PMs, System Analysts, and Project Analysts. Work is grouped by
+observable outcomes, with assignable work items, acceptance criteria, scope
+responsibility, dependencies, and references back to technical tasks.
+
+Invoke it manually after the tripack is available. It is an optional delivery
+planning step; generating a tripack does not automatically run Unpack.
+
+### Required inputs
+
+* One or more tripacks, each with technical design, tactical strategy, and task plan
+* At least one typed reference: acceptance criteria, API contract, FSD, or a specified other document kind
+* Scope: FE, BE, Mobile, an explained other scope, or a combination
+
+Output language is `id` by default; use `en` for English. Skill instructions and
+supporting references are maintained in English.
+
+### Explicit invocation
+
+```text
+$unpack
+
+Tripack: docs/report-export/
+
+References:
+- Type: acceptance-criteria
+  Location: docs/requirements/report-export.md
+- Type: api-contract
+  Location: api/report-export.yaml
+
+Scope: BE
+Output language: id
+```
+
+The explicit prefix `unpack:` is also supported. Missing required input is
+requested in one concise question; known or discoverable input is not requested again.
+
+### Output
+
+One Markdown document with five sections:
+
+1. Delivery summary
+2. Work groups
+3. Detailed breakdown
+4. Coverage and dependencies
+5. Technical references
+
+Return the document in the conversation unless saving is requested or an output
+location is supplied. When saving without a location, use `delivery-breakdown.md`
+beside the single tripack or in the supplied shared tripack directory. Ask for
+a destination when multiple tripacks have no shared directory supplied.
+
+Work IDs (`DB-001`, `DB-002`, ...) remain stable on revision. Scope position,
+tripack coverage, and pending decisions are recorded separately. A requirement
+can be in scope while still absent from the technical plan.
+
+Unpack continues with clear work when other requirements conflict, keeping
+unresolved criteria conditional. It does not claim end-to-end acceptance from
+one scope's contribution, infer implementation progress, convert technical
+complexity into duration, modify source documents, or create external tickets.
+
+---
+
+## 10. Ticket Generator
 
 **Skill:** `ticket-generator`
 
@@ -585,6 +657,24 @@ This does not replace `engineering-tripack-generator`'s task-plan, which is for 
 # Engineering Workflows
 
 The skills are designed to work independently, but their real value comes from combining them into repeatable engineering workflows.
+
+## Delivery Breakdown Review
+
+After one or more tripacks are available, the user can explicitly invoke Unpack:
+
+```text
+Tripacks + Requirement References + Selected Scope
+      ↓
+Unpack (manual, optional)
+      ↓
+Delivery Breakdown
+      ↓
+Scope, Responsibility, and Acceptance Review
+```
+
+The technical task plan remains the implementation input. Unpack provides a
+stakeholder view of planned delivery; Ticket Generator later documents actual
+changes against the diff.
 
 ## New Capability
 
@@ -802,6 +892,9 @@ For a substantial feature or system change, ENFORGE can be used as a complete en
 Not every task requires every skill.
 
 The workflow should be adapted to the nature and scope of the change.
+After the engineering tripack is available, the user may explicitly invoke
+`unpack` to review delivery scope, responsibility, and acceptance before execution.
+This optional review does not run automatically or replace the technical task plan.
 
 ---
 
@@ -858,6 +951,7 @@ Technology-Agnostic
 ├── capability-doc-generator
 ├── journey
 ├── engineering-tripack-generator
+├── unpack
 ├── spec-delta-analyzer
 └── ticket-generator
 
@@ -882,6 +976,7 @@ enforge/
 │   ├── flow-scanner/
 │   ├── spec-delta-analyzer/
 │   ├── engineering-tripack-generator/
+│   ├── unpack/
 │   ├── go-arch-auditor/
 │   ├── go-refactor-planner/
 │   ├── go-task-executor/
@@ -924,7 +1019,9 @@ Document what really happened.
 
 ENFORGE is under active development.
 
-The current implementation includes technology-agnostic engineering workflow skills, Go-specific architecture, planning, and execution skills, and a delivery skill for post-implementation ticket generation.
+The current implementation includes technology-agnostic engineering workflow skills,
+Go-specific architecture, planning, and execution skills, Unpack for planned delivery
+breakdowns, and Ticket Generator for post-implementation tickets.
 
 Additional technology stacks and engineering capabilities may be added over time.
 

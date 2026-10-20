@@ -11,7 +11,7 @@ contract fields, and source locators unchanged.
 | English heading | Indonesian heading |
 |---|---|
 | Delivery summary | Ringkasan delivery |
-| Work groups | Kelompok pekerjaan |
+| Work groups | Scope Pekerjaan |
 | Detailed breakdown | Detail breakdown |
 | Coverage and dependencies | Cakupan dan ketergantungan |
 | Technical references | Referensi teknis |
@@ -134,6 +134,7 @@ Use these labels consistently for Indonesian output:
 | Open issues and prerequisites | Isu terbuka dan prasyarat |
 | Responsibility by scope | Penanggung jawab berdasarkan scope |
 | Requirement sources | Sumber kebutuhan |
+| Group acceptance | Penerimaan scope pekerjaan |
 
 Keep unknowns descriptive, for example "Penanggung jawab belum ditetapkan" or
 "Perlu keputusan: masa berlaku file". A work item can still have clear scope

@@ -11,13 +11,11 @@ already established. Ask only for missing information that changes the breakdown
 
 Keep sections 1-4 focused on planned results, observable acceptance, responsibility,
 and decisions. Match the vocabulary to the work: API contracts, database migrations,
-retry handling, and other technical deliverables may use technical titles and
-criteria. In work titles, state the concrete change and the component or operation
-involved. Name the mechanism when it is documented and clarifies the work, such as
-request retry, outcome synchronization, or a delivery dispatcher. A title describing
-only a desired benefit or uncertain situation leaves the work ambiguous; put the
-benefit in Purpose. If the plan does not specify a mechanism, name the known operation
-and change without inventing an implementation. Keep groups focused on shared outcomes.
+retry handling, and other technical deliverables may use technical criteria.
+For Indonesian titles, follow the title patterns below. For English titles, name
+the concrete change and where it happens in one clause. Put the benefit in Purpose.
+If the plan does not name a mechanism, name the known change and place without
+inventing an implementation. Keep groups focused on shared outcomes.
 
 Keep technical detail when it identifies the deliverable or determines acceptance,
 such as a schema change, retry limit, required payload field, delivery deadline,
@@ -72,12 +70,48 @@ Use familiar professional words such as "pakai", "lalu", "karena", and "supaya"
 when they fit. Avoid literal English translations and heavy nominal phrases:
 use "menerapkan" rather than "melakukan penerapan".
 
-Technical Indonesian can be direct and natural. Keep familiar terms such as retry,
-timeout, endpoint, token, and idempotency when they are more precise than a forced
-translation. Explain an unfamiliar term briefly when needed to understand the
-work. Prefer a sentence stating what happens, when, and with what result over a
-chain of abstract nouns. For example, explain what a service does when an RPC
-times out instead of only describing "kepastian hasil finansial".
+Technical Indonesian uses an Indonesian sentence with the technical nouns the
+team already says. Keep payload, queue, event, retry, timeout, endpoint, token,
+and service names. Do not replace those nouns with a longer explanation.
+
+### Judul
+
+Use two patterns. These examples define wording only, not product requirements.
+
+Scope Pekerjaan states a capability or rule, the way a requirement is said:
+
+`[Objek bisnis] bisa/dapat [hasil]`
+
+`Hanya [objek] yang dapat [hasil]` when the outcome is an eligibility boundary.
+
+| Gunakan | Hindari |
+|---|---|
+| Survey Berbayar bisa dilaporkan ke Salesforce | Pembayaran survei berbayar terkirim ke Salesforce |
+| Hanya Survey Berbayar yang dapat dilaporkan ke Salesforce | Mengaitkan pembayaran dengan pemilik yang benar |
+
+"bisa" and "dapat" are both natural. Prefer "bisa" for a capability and
+"Hanya ... yang dapat" for an eligibility rule. Keep the product name used in
+the requirements, including "Survey" when that is the name in the source.
+A Scope Pekerjaan title does not use a completed-status verb such as "terkirim".
+
+Pekerjaan states one addition or change at a place people already recognize:
+
+`Menambahkan/Mengubah [objek yang biasa disebut] pada [tempat]`
+
+| Gunakan | Hindari |
+|---|---|
+| Menambahkan payload hitungan pada antrian (queue) event refund/cancel | Menyertakan bukti hitung pada refund reject dan cancel sampai antrean go-point |
+| Menambahkan retry pada pengiriman Salesforce | Mengimplementasikan dispatcher Salesforce dengan ordering, retry, dan failure handling |
+| Menambahkan payload pemilik pada request submit Salesforce | Menyiapkan dan memvalidasi data payload Salesforce |
+
+When an Indonesian word and its English term are both used, gloss once:
+"antrian (queue)". Keep path names that are already paired, such as
+"refund/cancel". Use "Menambahkan" or "Mengubah" when that is the change.
+Use another plain verb, such as "Menyimpan", "Mengirim", "Menguji", or
+"Mencegah", only when "Menambahkan" does not fit. Do not force "Menyediakan".
+
+Leave a second mechanism, a benefit, and the acceptance boundary out of the
+title. They belong in Tujuan, cakupan, or kriteria penerimaan.
 
 Avoid:
 - Generic introductions such as "Dalam era digital" or "Seiring berkembangnya".
@@ -86,25 +120,22 @@ Avoid:
   "krusial", or "optimal", and filler such as "memegang peranan penting".
 - Stock contrasts such as "bukan hanya X, tetapi juga Y", forced three-part
   lists, excessive bold text, em dashes, and exclamation marks.
-- Abstract titles or strings of technical terms that leave the actual work unclear.
+- A title that paraphrases a familiar technical noun, or stacks several mechanisms.
+- A completed-status Scope Pekerjaan title, such as "terkirim" or "telah dilaporkan".
 
-Choose a verb that fits the work, such as "Menambahkan", "Mengubah", "Mengecek",
-or "Mencegah"; do not force every title to start with "Menyediakan". Describe
-expected behavior in acceptance criteria. Avoid "Tim telah menyediakan..." unless
-actual completion is independently evidenced and relevant to the requested document.
+Describe expected behavior in acceptance criteria. Avoid "Tim telah menyediakan..."
+unless actual completion is independently evidenced and relevant to the requested
+document. In body prose, state what happens, when, and with what result. For
+example, explain what a service does when an RPC times out instead of only
+writing "kepastian hasil finansial".
 
-These examples illustrate wording only; they do not define product requirements:
+Body wording follows the same noun rule as titles:
 
-| Stiff or unclear wording | Direct wording |
+| Hindari | Gunakan |
 |---|---|
 | Mengimplementasikan mekanisme asynchronous export processing | Menambahkan pemrosesan export di background |
 | Melakukan optimalisasi validasi authorization | Menambahkan validasi hak akses pada endpoint |
 | Menangani exception pada proses generation | Menambahkan penanganan error saat membuat laporan |
-| Menangani pembayaran dan refund yang hasilnya belum diketahui | Mengimplementasikan retry request dan sinkronisasi hasil transaksi go-point |
-| Mengaitkan laporan dengan pemilik dan induk survei yang benar | Menyiapkan dan memvalidasi data payload Salesforce |
-| Menjaga nilai terbaru saat pengiriman terlambat atau tidak pasti | Mengimplementasikan dispatcher Salesforce dengan ordering, retry, dan failure handling |
-| Menyediakan kemampuan autentikasi layanan eksternal | Menambahkan autentikasi OAuth untuk API eksternal |
-| Menjamin keunikan efek finansial pada redelivery | Menambahkan idempotency agar retry tidak memotong saldo dua kali |
 
 Only use the behavior in an example if the project's sources support it.
 Never copy example-specific file formats, date limits, columns, or durations.
@@ -121,9 +152,9 @@ Localize all explanatory text while preserving source identifiers.
 ## Final language pass
 
 Read the draft once for clarity and once for fidelity:
-1. Simplify phrases that would sound unnatural in a professional conversation.
-   Check that each title identifies the concrete work and target, rather than only
-   its benefit or a situation to handle, and that each technical term adds precision.
+1. Check Scope Pekerjaan titles against `[Objek] bisa/dapat [hasil]` and work
+   titles against `Menambahkan/Mengubah [objek] pada [tempat]`. Keep familiar
+   technical nouns. Remove a second mechanism or a benefit from the title.
 2. Remove filler and unsupported claims.
 3. Replace vague placeholders with the missing information and its impact.
 4. Confirm all source facts, numbers, identifiers, boundaries, and pending

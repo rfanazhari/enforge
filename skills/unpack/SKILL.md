@@ -107,8 +107,12 @@ items where each scope has its own deliverable. Do not split by technical layer
 or force one work item per endpoint or AC.
 
 Include necessary engineering support within the selected scope and explain its
-contribution clearly. Name technical items by the concrete change and the component
-or operation involved, using source-supported mechanisms when they clarify the work.
+contribution clearly. Name each item by the change and the place involved.
+For Indonesian titles, follow the writing guide: a Scope Pekerjaan title states
+a capability or eligibility rule, and a work item states what is added or changed
+and where.
+Keep the technical nouns the sources already use. Do not paraphrase those nouns
+into a longer explanation, and do not stack several mechanisms into one title.
 Keep the benefit in Purpose rather than using it as a substitute for the work name.
 Technical acceptance criteria are appropriate for technical deliverables. Keep groups
 understandable through their outcomes; use the writing guide to choose item detail.

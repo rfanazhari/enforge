@@ -70,9 +70,11 @@ Use familiar professional words such as "pakai", "lalu", "karena", and "supaya"
 when they fit. Avoid literal English translations and heavy nominal phrases:
 use "menerapkan" rather than "melakukan penerapan".
 
-Technical Indonesian uses an Indonesian sentence with the technical nouns the
+Technical Indonesian uses an Indonesian sentence with the technical words the
 team already says. Keep payload, queue, event, retry, timeout, endpoint, token,
-and service names. Do not replace those nouns with a longer explanation.
+service names, and operation names from the plan, such as capture, submit, hold,
+and release. Do not translate an operation name into an Indonesian verb that
+also means something else.
 
 ### Judul
 
@@ -103,12 +105,13 @@ Pekerjaan states one addition or change at a place people already recognize:
 | Menambahkan payload hitungan pada antrian (queue) event refund/cancel | Menyertakan bukti hitung pada refund reject dan cancel sampai antrean go-point |
 | Menambahkan retry pada pengiriman Salesforce | Mengimplementasikan dispatcher Salesforce dengan ordering, retry, dan failure handling |
 | Menambahkan payload pemilik pada request submit Salesforce | Menyiapkan dan memvalidasi data payload Salesforce |
+| Capture perhitungan pembayaran pada submit survey regular, promo, dan chain | Menangkap perhitungan pembayaran pada submit survei regular, promo, dan chain |
 
-When an Indonesian word and its English term are both used, gloss once:
-"antrian (queue)". Keep path names that are already paired, such as
-"refund/cancel". Use "Menambahkan" or "Mengubah" when that is the change.
-Use another plain verb, such as "Menyimpan", "Mengirim", "Menguji", or
-"Mencegah", only when "Menambahkan" does not fit. Do not force "Menyediakan".
+Copy the operation word from the task title. Do not translate it and do not
+choose a near Indonesian verb. "Capture" stays "capture". Use "Menambahkan"
+or "Mengubah" only when the task title has no shorter operation word. Gloss
+once when both languages appear, as in "antrian (queue)". Keep paired path
+names such as "refund/cancel".
 
 Leave a second mechanism, a benefit, and the acceptance boundary out of the
 title. They belong in Tujuan, cakupan, or kriteria penerimaan.

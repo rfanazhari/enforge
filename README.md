@@ -595,6 +595,16 @@ Work IDs (`DB-001`, `DB-002`, ...) remain stable on revision. Scope position,
 tripack coverage, and pending decisions are recorded separately. A requirement
 can be in scope while still absent from the technical plan.
 
+Work prerequisites are distinguished from dependencies for end-to-end acceptance.
+Items separate independently acceptable responsibilities, including across services
+within one scope, while shared contributions are not duplicated across scenarios.
+Open issues identify whether implementation, acceptance, or production activation
+is blocked. Main explanations focus on observable results; implementation mechanics
+remain traceable in technical references. Technical work names identify the concrete
+change and target component or operation, retaining technical terms and acceptance
+criteria where useful. Indonesian wording should explain the work directly and
+avoid stiff translations or titles that only describe a benefit.
+
 Unpack continues with clear work when other requirements conflict, keeping
 unresolved criteria conditional. It does not claim end-to-end acceptance from
 one scope's contribution, infer implementation progress, convert technical

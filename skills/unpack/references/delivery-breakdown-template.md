@@ -31,6 +31,9 @@ If the business context is absent, say what is unknown.]
 - Grouping basis: [AC scenarios / API capabilities / FSD functions / other]
 - Acceptance boundary: [what this scope contributes and what requires others]
 
+[Material blockers: issue IDs and their impact on implementation, acceptance,
+or production activation. Keep full explanations in section 4. Omit if none.]
+
 ## 2. Work groups
 
 ### [Outcome-oriented group name]
@@ -48,19 +51,27 @@ If the business context is absent, say what is unknown.]
 ### DB-001: [work name]
 
 - ID: DB-001
-- Work name: [concrete planned contribution]
+- Work name: [action, concrete change, and target component or operation;
+  name source-supported mechanisms when useful; keep the benefit in Purpose]
 - Purpose: [why this work is needed, based on the sources]
 - Work scope: [included behavior and relevant boundaries]
 - Deliverable: [result that will be available]
 - Acceptance criteria:
-  - [specific, verifiable condition supported by a source]
-  - [when unresolved: pending decision, source disagreement, and acceptance impact]
-- Dependencies: [other DB IDs, outside-scope contributions, recorded decisions,
-  or unresolved decisions; state none identified when appropriate]
+  - [observable, source-supported condition; technical criteria are appropriate
+    for technical deliverables; keep acceptance-relevant quantities and boundaries,
+    with lower-level implementation details in section 5]
+  - [when unresolved: issue ID and conditional acceptance impact;
+    full source disagreement belongs in section 4]
+- Dependencies:
+  - Work prerequisites: [required result or stage to start or complete this
+    contribution, with DB IDs or external references; state none identified if so]
+  - End-to-end acceptance: [other contributions or issue IDs needed to accept
+    the group outcome; state none identified if so]
 - Responsibility by scope: [BE / FE / Mobile / explained other; name a person or
   team only if assigned in the sources, otherwise say the owner is not assigned]
 - Requirement sources: [behavior / API contract / recorded policy / engineering
-  need, each with document and source locator]
+  need; use registered IDs or aliases with section locators where useful;
+  resolve document locations through the source register in section 5]
 
 ## 4. Coverage and dependencies
 
@@ -69,7 +80,17 @@ progress or verified implementation.
 
 | Requirement / source | Work items | Scope position | Tripack coverage | Covered and missing contributions | Decision needed and acceptance impact |
 |---|---|---|---|---|---|
-| [original ID or marked alias + locator] | [DB IDs or reason none] | [In scope / Outside scope] | [Fully planned / Partially planned / Not planned / Not assessed for outside scope] | [specific planned and missing parts, including external dependencies] | [source positions, required decision and impact, or None identified] |
+| [original ID or marked alias + locator] | [DB IDs or reason none] | [In scope / Outside scope] | [Fully planned / Partially planned / Not planned / Not assessed for outside scope] | [specific planned and missing parts, including external dependencies] | [issue ID and local acceptance impact, or None identified] |
+
+### Open issues and prerequisites
+
+| Issue ID | Decision or prerequisite | Source positions and what remains unresolved | Blocked stage and affected groups / items |
+|---|---|---|---|
+| [source ID or stable local alias] | [unresolved decision / provisioning / validation prerequisite] | [full explanation, source locators, and required resolution or evidence] | [implementation / acceptance / production activation; affected IDs and specific impact] |
+
+[Omit this subsection if none. Coverage rows and affected items cite issue IDs
+and local impact; keep the full explanation here. Preserve existing issue aliases
+on revision. A fully planned contribution may still have an open prerequisite.]
 
 ### Outside-scope dependencies
 
@@ -108,6 +129,9 @@ Use these labels consistently for Indonesian output:
 | Deliverable | Hasil yang diserahkan |
 | Acceptance criteria | Kriteria penerimaan |
 | Dependencies | Ketergantungan |
+| Work prerequisites | Prasyarat pengerjaan |
+| End-to-end acceptance | Penerimaan menyeluruh |
+| Open issues and prerequisites | Isu terbuka dan prasyarat |
 | Responsibility by scope | Penanggung jawab berdasarkan scope |
 | Requirement sources | Sumber kebutuhan |
 

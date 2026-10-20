@@ -1,7 +1,7 @@
 # ENFORGE
 
 <p align="center">
-  <img src="./assets/enforge-hero.png" alt="ENFORGE - AI Coding Agents Skills Collection" />
+  <img src="./assets/enforge-hero-banner.png" alt="ENFORGE - AI Coding Agents Skills Collection" />
 </p>
 
 > Don't just generate code. Forge the change.

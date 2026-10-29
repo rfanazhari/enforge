@@ -331,6 +331,28 @@ Rather than assuming a specific technology, it discovers the project's:
 
 from `CLAUDE.md`, `AGENTS.md`, and the codebase.
 
+It reads available, applicable project instructions and verifies them against code.
+A project with only `AGENTS.md` can proceed; clarification focuses on missing material
+information or unresolved conflicts. Existing flows are assessed for reusable parts
+and limitations, with mandatory conventions distinguished from incidental structure.
+
+Before deriving strategy and tasks, the generator assesses the draft design using
+DDD where domain rules are affected, plus DRY, KISS, and SOLID. The design records
+material rule ownership, enforcement and verification plans, path contracts
+(including creation, restoration, and transitions when relevant), and reasons for
+material structural choices. Assessment can retain a simple structure, refine it,
+or defer a choice with its affected work blocked.
+
+Revisions accept requirement changes and design/implementation findings with
+requirements unchanged. Mode C assesses whether code, documents, or both need to
+change. Internal structure may improve within scope with reasons and behavioral
+evidence; changes to binding contracts or explicitly required structure need a
+resolved decision. Valid task IDs/status and decision history are preserved.
+Reconciliation precedes dependent tasks only when code/schema changes are needed;
+documents-only refinements require no code-repair task. Material design changes
+are synchronized before dependent work starts and at task closure. These are
+generator handoff rules; separate executor integration remains follow-up work.
+
 ### Use for
 
 * New features
@@ -338,7 +360,7 @@ from `CLAUDE.md`, `AGENTS.md`, and the codebase.
 * Requirement changes
 * Implementation planning
 * Revising an existing tripack
-* Re-syncing documentation after requirements change
+* Re-syncing documentation after requirements change or implementation findings
 
 ### Typical input
 
@@ -357,6 +379,8 @@ Existing Tripack
 
 ```text
 Technical Design
+        ↓
+Design Assessment & Refinement
         ↓
 Tactical Strategy
         ↓

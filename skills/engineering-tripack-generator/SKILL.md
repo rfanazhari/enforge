@@ -1,21 +1,16 @@
 ---
 name: engineering-tripack-generator
 description: >
-  Generates or revises the three standard technical documents ("tripack") for feature work
-  in a software project: technical-design.md, tactical-strategy.md, and task-plan.md —
-  plus an optional decision-log.md capturing business-driven technical decisions
-  (readable by PM/PO/tech lead) whenever the input contains them.
-  Stack-agnostic — it discovers the project's tech stack, architecture, and conventions
-  from CLAUDE.md at the project root and from the codebase itself.
-  Use this skill whenever the user wants an implementation plan — for a NEW feature, an ADJUSTMENT
-  to an existing feature, or a REVISION of a previously generated tripack (enhance, adjust, or remove
-  parts after a requirement change mid-development). Input can be a PRD, FSD, analysis document,
-  or a direct feature description — no specific upstream document is required.
-  Trigger phrases include: "generate tripack", "buat technical design", "buatkan task plan",
-  "generate implementation plan", "buat rencana implementasi", "update tripack",
-  "revisi technical design", "ada perubahan requirement", "re-sync doc",
-  "adjust tripack", "tripack dari PRD/FSD ini".
-  Do NOT use for: small bug fixes, doc reviews without generation, or general architecture questions.
+  Generate or revise technical-design.md, tactical-strategy.md, and task-plan.md
+  for new features, existing-feature adjustments, or tripack revisions after
+  requirement changes or design/implementation findings with unchanged requirements.
+  Assess design before deriving strategy and tasks; add decision-log.md only for
+  business-driven technical decisions. Stack-agnostic: discover context from applicable
+  project instructions (including AGENTS.md and CLAUDE.md) and verified code.
+  Accept PRD, FSD, analysis, or direct descriptions. Use for "generate tripack",
+  "buat technical design", "buatkan task plan", "generate implementation plan",
+  "update tripack", "revisi technical design", or "re-sync doc".
+  Exclude small bug fixes, document reviews without generation, and general architecture questions.
 ---
 
 # Engineering Tripack Generator
@@ -25,13 +20,14 @@ software project. Output is designed for direct use by engineers and can be revi
 a tech lead or PM.
 
 The skill is **stack-agnostic**: it makes no assumptions about language, framework,
-architecture, or tooling. Everything project-specific is discovered from `CLAUDE.md`
-and the codebase (see Project Context Discovery), and the output templates adapt to
-what is found there.
+architecture, or tooling. Everything project-specific is discovered from applicable
+project instructions and the codebase (see Project Context Discovery), and the output
+templates adapt to what is found there.
 
-The tripack is the **source of truth** for implementation sessions (vibe coding per task):
-task-plan tasks reference technical-design sections, so every task is traceable and
-verifiable against the design.
+The tripack records binding contracts, current design choices, and remaining work.
+Tasks reference technical-design sections for verification. Internal structure can
+evolve within the authority described below; synchronize material findings so later
+tasks use the current assessed design.
 
 ## Project Context Discovery
 
@@ -39,7 +35,10 @@ Before generating anything, discover the actual project context. **Never fill
 architecture, reuse, or schema details from assumption.** This step is mandatory
 in every mode.
 
-1. Read `CLAUDE.md` at the project root — it is the authoritative source for:
+1. Read available, applicable project instructions, including `AGENTS.md` and
+   `CLAUDE.md` at the root and instructions scoped to affected directories. Check
+   their scope and precedence; neither filename automatically replaces the other.
+   Extract:
    - Tech stack (language, framework, database, API style — REST/gRPC/GraphQL/etc.)
    - Directory structure and where each kind of code lives
    - Code behavior conventions, patterns, and project-specific rules
@@ -47,13 +46,18 @@ in every mode.
 2. Verify and complete the picture from the codebase: package/module structure,
    one or two similar existing features/flows as pattern references, interface
    definition files (proto/OpenAPI/GraphQL schema/route definitions), and the
-   migrations directory if one exists.
+   migrations directory if one exists. For reference flows, explain which parts
+   fit the new need and which limitations matter. Separate mandatory conventions
+   from incidental existing structure; assessing suitability does not authorize
+   unrelated legacy cleanup.
 3. Derive the project's **layer/component names** from what you find (e.g.
    handler/service/repository, controller/model/view, or whatever the project uses).
    Use the project's own vocabulary in all output documents — never impose a
    layer structure the project doesn't have.
-4. If `CLAUDE.md` is missing or a critical detail is not discoverable, ask the user
-   instead of guessing.
+4. Ask only about material information still missing or unresolved conflicts after
+   discovery. A missing instruction file alone is not a blocker. Discovery is done
+   when the affected components, applicable constraints, usable references, and
+   remaining material uncertainties are identified and grounded in available sources.
 
 ## Input
 
@@ -62,10 +66,12 @@ Any of the following, in any combination:
 - PRD or FSD from the product team
 - An analysis document produced earlier in the conversation or provided as a file
 - A direct feature/change description from the user
-- For Mode C: the existing tripack files (required) plus the change description
+- For Mode C: the existing tripack files (required) plus the requirement change or
+  design/implementation finding
 
-Constraints (e.g. additive only, no DB change, no domain entity change) must be known
-before generating. If not stated in the input, **ask the user before proceeding.**
+Discover constraints (e.g. additive only, no DB change, no domain entity change) from
+the input and applicable instructions. Clarify material gaps or conflicts before
+finalizing affected work; keep independent work moving with uncertainties visible.
 
 ## Modes
 
@@ -86,28 +92,64 @@ Before generating, perform an **impact analysis** against the codebase:
 Then generate a fresh tripack that incorporates the impact analysis.
 
 ### Mode C — Revision of an Existing Tripack
-A tripack exists and (usually) implementation is partially done, then requirements changed.
+A tripack exists and requirements changed, or design/implementation findings justify
+revision while requirements remain unchanged. Implementation may be partially done.
 **Update, do not regenerate from scratch.** Steps:
 
 1. **Baseline** — compare the existing tripack against the current code state.
    Classify: implemented-and-conforming / implemented-but-deviating /
-   not-yet-implemented / code-not-covered-by-design. Ask the user for task
-   progress status if it is not evident from task-plan.md checkboxes.
-2. **Impact analysis** — map the new change onto the tripack: which design sections
+   not-yet-implemented / code-not-covered-by-design. Keep this coverage/progress
+   classification separate from assessment of each difference: **contract violation**,
+   **valid structural refinement**, or **unresolved decision**. Use code and available
+   verification evidence; clarify material progress uncertainty rather than inferring
+   completion from code presence alone.
+2. **Impact analysis** — map the change or finding onto the tripack: which design sections
    change, which entities/schema are affected (migration from the *current actual*
    schema, not the originally planned one), which completed work becomes invalid,
-   and whether the change contradicts earlier decisions (flag contradictions —
-   let the user decide which wins).
-3. **Update technical-design.md** — the resulting doc must be fully self-consistent:
+   and whether it contradicts earlier binding decisions. Apply Design Authority
+   below: resolve conflicts with binding contracts/constraints through the relevant
+   decision owner; ordinary authorized internal refinements need no new approval.
+3. **Draft and assess technical-design.md** — use the assessment step in How It Works.
+   Before planning reconciliation, decide whether **code, documents, or both** need
+   to change and explain why. The resulting doc must be fully self-consistent:
    a new reader should understand the current design without knowing its history.
    Record the change in the **Revision History** section (what changed, why).
 4. **Update tactical-strategy.md** — adjust reuse map, net-new inventory, testing
    and rollout/rollback as needed.
-5. **Regenerate task-plan.md for remaining work only** —
+5. **Update task-plan.md for remaining work** —
    - Preserve completed tasks and their `[x]` status if still valid
    - Mark invalidated tasks as `~~obsolete~~` with a one-line reason (do not delete)
-   - Insert **reconciliation tasks first**: align already-written code (including
-     schema migration) with the revised design, before any new-feature tasks
+   - Preserve task IDs; allocate new IDs without renumbering existing tasks
+   - Add code/schema reconciliation only when implementation actually needs to change;
+     a documents-only refinement does not require a code-repair task
+   - Place reconciliation before tasks that depend on its result; unrelated work can proceed
+   - Mark tasks affected by unresolved decisions as blocked, with the decision and
+     readiness condition; a deferred design is not executable for its dependents
+   - Preserve Revision History and decision history, including superseded entries
+
+## Design Authority and Handoff
+
+Distinguish these in the technical design:
+
+- **Binding contracts:** business rules, accepted inputs/states, normalization, errors
+  and their ordering, failure timing, side effects, lifecycle, and caller/data compatibility.
+  Changes require a resolved decision appropriate to their impact and existing authority.
+- **Internal structure:** components, helpers, types, and placement may be refined
+  within scope when the executor explains the benefit and supplies evidence that
+  binding behavior remains preserved. A structural difference alone is not a defect.
+- **Explicitly required structure:** record the constraint, source, and reason.
+  Resolve a conflict before changing it; a familiar existing pattern is not by
+  itself an explicit requirement.
+
+Treat aggregate boundaries, transaction changes, or effects outside scope as material
+when guarantees or responsibilities change. Assess that impact before calling a
+change internal. This authority does not expand the task's scope.
+
+Material design changes affecting later tasks must be synchronized in the tripack
+before those tasks start. At task closure, align affected design, strategy, and task
+status with the result. Small local structural edits need no step-by-step history.
+This defines the generator's handoff; changing separate executor instructions is
+follow-up work.
 
 ## Output
 
@@ -159,6 +201,17 @@ GraphQL schema, event/message contracts, CLI commands, or public library API]
 - Migration plan: forward migration + rollback path
 - Impact on existing data (backfill, defaults, data loss risk)
 
+### Concepts and rules (when domain models/rules are affected)
+- Business concepts/terms, their meaning, and the context where each applies
+- Identity/lifecycle, value semantics, and consistency boundaries where relevant
+
+| Material rule | Owner | Enforcement paths | Proof plan |
+|---------------|-------|-------------------|------------|
+| [rule/invariant] | [responsible component/model] | [creation/restoration/transition/other callers] | [observable cases and verification] |
+
+[For changes without domain impact: state that domain assessment is not applicable
+and why. Record any material non-domain rules with their owners in component details.]
+
 ## 4. Component Breakdown
 [Use the project's actual layers/components as rows — discovered, not assumed]
 
@@ -168,7 +221,16 @@ GraphQL schema, event/message contracts, CLI commands, or public library API]
 | [project's layer 2] | New / Modified / Reused as-is | ... |
 
 ### Detail per component
-[For each New or Modified component: explain what changes and why]
+[For each New or Modified component: explain what changes and why; include material
+non-domain rules, owners, enforcement paths, and proof plans not covered above]
+
+### Material structure decisions and assessment
+| Choice | Reason and material alternatives/tradeoffs | Authority and refinement boundary | Assessment outcome |
+|--------|-------------------------------------------|-----------------------------------|--------------------|
+| [chosen or retained structure] | [concrete benefit/cost vs viable alternative] | [internal choice / explicit constraint with source and reason; binding guarantees] | [retained / revised / deferred, reason and decision needed] |
+
+[Scale detail to impact; a simple retained structure can need only a brief reason.
+Keep assessment in these design sections rather than a separate report/checklist.]
 
 ## 5. Flow Sequence
 [Step-by-step from entry point to result — request/response, event handling,
@@ -179,6 +241,14 @@ job execution, or whatever fits the feature]
 ## 6. Request / Response (or Input / Output)
 [Diff or full spec of new input and output vs existing if changed]
 
+### Creation, restoration, and transition contracts (when relevant)
+| Path | Accepted inputs/states and normalization | Errors/order and failure timing | Side effects and compatibility | Proof plan |
+|------|------------------------------------------|--------------------------------|--------------------------------|------------|
+| [new input / load persisted state / state transition] | [path-specific policy] | [observable behavior] | [caller/data/effects] | [cases to verify] |
+
+[Explain whether restoration trusts, validates, normalizes, or migrates stored state.
+Share policy only where the path contracts agree; note inapplicability briefly.]
+
 ## 7. Error Handling
 [New errors added, their propagation path]
 
@@ -187,7 +257,9 @@ job execution, or whatever fits the feature]
 - [ ] [constraint 2 from input]
 
 ## 9. Risks & Open Questions
-[Implementation risks, unresolved questions]
+[Implementation risks, unresolved questions, and deferred assessment decisions.
+For each blocker: affected components/task IDs, decision owner or source needed,
+and condition for readiness. Independent tasks may remain executable.]
 
 ## 10. Revision History
 | Version | Date | Change | Reason |
@@ -204,9 +276,9 @@ job execution, or whatever fits the feature]
 [Additive-only / breaking change / mixed — and the chosen approach]
 
 ## 2. Code Reuse Map
-| Component | Location | Used for |
-|-----------|----------|----------|
-| [function/class/module name] | [package/file] | [purpose] |
+| Component | Location | Used for | Fit and limitations |
+|-----------|----------|----------|---------------------|
+| [function/class/module name] | [package/file] | [purpose] | [what fits; relevant gaps] |
 
 ## 3. Net-New Code Inventory
 | Item | Layer/Component | Type | Notes |
@@ -217,7 +289,9 @@ job execution, or whatever fits the feature]
 [Recommendation: one large PR or split, safe merge order; commit per task]
 
 ## 5. Testing Strategy
-[Use the project's test framework and commands from CLAUDE.md]
+[Use the project's verified test framework and commands from applicable instructions
+(including AGENTS.md / CLAUDE.md) and codebase. Derive cases from assessed rule
+ownership and path contracts; distinguish planned checks from existing evidence.]
 
 ### Unit Tests
 - [what to unit test, focus on new logic]
@@ -245,10 +319,12 @@ job execution, or whatever fits the feature]
 - Status: [ ] Todo | [~] In Progress | [x] Done | ~~obsolete~~
 - ref: technical-design.md section this task implements
 - DoD: definition of done (verifiable)
+- Blocked: decision/prerequisite and readiness condition; not executable until resolved
 
 ## Tasks
 
-### Reconciliation (Mode C only — must be done first)
+### Reconciliation (Mode C only — when code/schema changes are needed)
+[Must precede dependent tasks. Omit for a documents-only revision.]
 - [ ] T1. [align existing code/schema with revised design] — [Component] — [S/M/L]
       — depends: none — ref: design §X — DoD: [criteria]
 
@@ -257,12 +333,17 @@ job execution, or whatever fits the feature]
       — DoD: [e.g. tests pass, lint clean, endpoint callable]
 
 ### Parallel (can be done simultaneously)
-- [ ] T5. [Task title] — [Component] — [S/M/L] — depends: none — ref: design §Y
+- [ ] T5. [Task title] — [Component] — [S/M/L] — depends: T1 — ref: design §Y
       — DoD: [criteria]
 
+### Blocked / Deferred (when applicable)
+- [ ] T6. [Affected work] — [Component] — [S/M/L] — depends: [decision/task]
+      — ref: design §X — blocked by: [decision and owner/source]
+      — ready when: [resolved choice and synchronized design] — DoD: [criteria]
+
 ## Dependency Graph
-T1 → T2 → T3
-T5 (parallel, after T1)
+T1 → T2
+T1 → T5 (parallel with T2)
 ```
 
 ### File 4 (optional): decision-log.md
@@ -308,39 +389,60 @@ Justifications.
 
 ## How It Works
 
-1. **Discover project context** (CLAUDE.md + codebase) — see Project Context Discovery.
-   This determines the vocabulary and structure of everything generated below.
-2. **Detect the mode** (A/B/C) and confirm constraints with the user if not stated.
-3. **Analyze** — Mode B: impact analysis against the codebase.
-   Mode C: baseline + impact analysis against the existing tripack and code.
-4. **Generate/update technical-design.md** — architectural decisions: what is new,
-   what is reused, why, and where each net-new component lives. Justify placement.
-5. **Generate/update tactical-strategy.md** — execution: reuse, net-new, safe order.
-   Testing must cover happy path + every new error + regression.
-6. **Generate/update task-plan.md** — granular tasks, each independently verifiable
-   and completable in one implementation session. Every task has: stable ID, title,
-   component, complexity, dependency, design-section ref, and DoD.
-7. **Generate/update decision-log.md if applicable** — during analysis (step 3),
-   note every technical decision with a business driver; if any exist, write them
-   to decision-log.md. In Mode C: check whether the new change contradicts any
-   active decision — if so, surface it to the user, and on confirmation mark the
-   old entry `superseded by D[x]` (never delete it) and add the new entry.
+1. **Discover project context** from applicable instructions (including AGENTS.md
+   and CLAUDE.md) and verified code — see Project Context Discovery. Identify the
+   mode (A/B/C) and clarify material gaps/conflicts in constraints.
+2. **Analyze/baseline** — Mode A: map requirements and affected boundaries.
+   Mode B: impact analysis against the codebase. Mode C: baseline + impact analysis
+   against the existing tripack and code, with separate coverage and difference
+   assessments. Finish with affected behavior, reuse, and compatibility risks known
+   or explicitly identified as unresolved.
+3. **Draft technical-design.md** — what is new/reused, rule ownership and enforcement,
+   path contracts, structure choices, and explicit constraints. Record business-driven
+   decisions in decision-log.md when applicable; keep technical reasons in the design.
+4. **Assess and refine the design** — read [Design Assessment](references/design-assessment.md)
+   in every mode before deriving strategy/tasks. Apply domain criteria when the
+   change affects models/rules; briefly explain inapplicability otherwise. Record
+   retained/revised/deferred outcomes within the technical design. This step is done
+   when every material rule has an owner, enforcement path, and proof plan, every
+   material structure choice has a reason and refinement boundary, and blockers
+   identify affected work and readiness conditions. Deferred choices remain blocked
+   for dependent tasks; continue planning independently settled work.
+5. **Generate/update tactical-strategy.md** from the assessed design — reuse,
+   net-new work, safe order, and verification for material rules and contracts.
+   Cover happy paths, new errors, relevant creation/restoration/transitions, and regression.
+6. **Generate/update task-plan.md** from that strategy — granular tasks, each
+   independently verifiable and completable in one implementation session. Every task has: stable ID, title,
+   component, complexity, dependency, design-section ref, and DoD. Mark decision-blocked
+   tasks explicitly. In Mode C, decide reconciliation direction before adding work.
+7. **Check consistency** — design outcomes, reuse/inventory, test strategy, task
+   dependencies, and DoD must agree. Check each material rule/contract has planned
+   verification and no dependent task is marked ready with a blocking decision open.
+   In Mode C, preserve valid task IDs/status and revision/decision history. When an
+   active business-driven decision is contradicted, surface it to the user; after
+   resolution, mark the old entry `superseded by D[x]` (never delete it) and add the
+   new entry. Synchronize affected documents before handing off dependent tasks.
 8. **Save the files** and summarize: mode used, key decisions, whether a
-   decision-log was produced (and why not, if skipped), open questions.
+   decision-log was produced (and why not, if skipped), assessment outcomes, and
+   open decisions with their blocked work.
 
 ## Rules
 
 - **All output documents must be written in English**, regardless of conversation language
 - Use the project's own layer/component names and conventions as discovered from
-  CLAUDE.md and the codebase — never impose a structure the project doesn't have
+  applicable project instructions (including AGENTS.md and CLAUDE.md) and verified code;
+  assess reference-flow suitability within scope instead of copying structure automatically
 - Do not write implementation code — design and planning only
 - Never fill the reuse map, component status, or schema details from assumption —
   verify against the codebase first
-- If there are blocking open questions (from the input or discovered during analysis),
-  flag them to the user before generating
+- Surface blocking questions with their affected work; keep dependent tasks blocked
+  until resolved and continue independently settled planning
 - In Mode C, never silently drop prior decisions: contradictions between old and new
-  requirements must be surfaced, and history is preserved via Revision History,
-  ~~obsolete~~ task markers, and `superseded` decision-log entries
+  requirements or findings must be assessed under Design Authority, and history is
+  preserved via Revision History, ~~obsolete~~ task markers, and `superseded`
+  decision-log entries
+- Apply the assessment completion gate before strategy/tasks. Internal refinements
+  follow Design Authority and Handoff; documents-only updates require no code repair
 - decision-log.md is conditional: create it only when business-driven technical
   decisions exist; keep its language accessible to PM/PO (plain language, no
   unexplained jargon), unlike the other three files which target engineers

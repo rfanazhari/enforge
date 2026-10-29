@@ -48,7 +48,9 @@ in every mode.
    definition files (proto/OpenAPI/GraphQL schema/route definitions), and the
    migrations directory if one exists. For reference flows, explain which parts
    fit the new need and which limitations matter. Separate mandatory conventions
-   from incidental existing structure; assessing suitability does not authorize
+   from incidental existing structure. Existing code establishes current behavior,
+   not design correctness; justify retention through the Evidence before precedent
+   criteria in `references/design-assessment.md`. Assessing suitability does not authorize
    unrelated legacy cleanup.
 3. Derive the project's **layer/component names** from what you find (e.g.
    handler/service/repository, controller/model/view, or whatever the project uses).

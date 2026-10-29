@@ -4,8 +4,9 @@ Read at the assessment step in every mode. Use the quality criteria for all chan
 apply the domain criteria when models or domain rules are affected. Scale the depth
 to the change's impact. A short reason to retain a simple design can be sufficient.
 
-Contents: source basis; domain assessment; design quality; conditional patterns;
-contracts across paths; worked decisions; completion.
+Contents: source basis; decision references; evidence before precedent; domain
+assessment; design quality; conditional patterns; contracts across paths; worked
+decisions; completion.
 
 ## Source basis
 
@@ -28,6 +29,67 @@ not requirements prescribed by the authors.
   (2020): separate different reasons for change; support extension; preserve the
   meaning of interfaces across implementations; limit caller dependencies; direct
   dependencies toward abstractions.
+
+## Decision references
+
+Use sources according to the question they can answer. These roles are not a new
+instruction-precedence hierarchy; resolve binding conflicts under Design Authority
+and Handoff in `../SKILL.md`.
+
+| Source to consult | Role in a decision |
+|-------------------|--------------------|
+| Supplied requirements, business-rule IDs, and user decisions | Establish required behavior, scope, and accepted constraints. |
+| Applicable project instructions and active architecture decisions | Establish explicitly required structure; check scope, status, and the stated reason. |
+| Actual code and callers, storage mappings, tests, and available data | Establish current behavior, integration obligations, and compatibility evidence; existing structure is not proof of suitability. |
+| Domain assessment, Design quality, Conditional patterns, and Contracts across paths below | Select relevant evaluation criteria and compare viable designs against the present requirements. |
+| Primary references linked in Source basis | Clarify the underlying concepts when the local criteria leave a material interpretation uncertain. |
+
+Start with the supplied artifacts and applicable local sources. Read the relevant
+assessment criteria before choosing a structure. Consult the linked primary source
+when uncertainty about a concept could change the decision; for a technology-specific
+claim outside this reference, consult official documentation matching the project's
+version. Read the relevant passage rather than citing an unread link or relying on
+remembered authority. Additional research is unnecessary when the available criteria
+and evidence already settle the choice.
+
+For each material decision, make this reasoning traceable in the existing technical
+design sections, using a short paragraph or the structure-decisions table:
+
+**Rule and source → problem → viable alternatives → comparison using applicable
+criteria and observed evidence → decision and accepted consequences.**
+
+Identify sources precisely enough to inspect: requirement ID or user decision,
+instruction/ADR path and section, code path and symbol, test case, or external link
+and relevant concept. Explain how the criterion applies to these paths and callers;
+naming DDD, SOLID, or an author alone is not a justification. Separate observed facts
+from inference, assumptions, and planned verification. If a necessary source is
+unavailable, record the evidence gap and its impact; defer dependent decisions only
+when that gap prevents a defensible choice. Never present a proposed test as proof
+that a design already works.
+
+## Evidence before precedent
+
+Treat existing code as evidence of current behavior and integration constraints,
+not proof that its structure is suitable. Assess the present requirements first,
+then compare the existing shape with the relevant candidate from this reference.
+Retaining a shape and introducing one carry the same burden of justification.
+
+For a material choice influenced by precedent, record in the technical design:
+
+- The binding rule or constraint and its source. Separate required behavior and
+  compatibility from incidental implementation choices.
+- How the relevant candidate would own the rule and what callers would do on an
+  ordinary and invalid-input path, compared with the proposed choice.
+- The concrete benefit or cost that decides the comparison. If departing from an
+  applicable recommendation here, explain why its benefit does not apply or which
+  demonstrated constraint/cost outweighs it; name how the chosen design supplies
+  the required guarantees.
+
+“Another feature does it,” fewer types, and private fields alone do not settle that
+comparison. Private fields are useful enforcement evidence, but also inspect all
+creation, mutation, and restoration paths and the obligations left to callers.
+Different rules for similarly named concepts argue against sharing their policy;
+they do not by themselves argue against modeling each concept separately.
 
 ## Domain assessment
 
@@ -124,6 +186,23 @@ length boundaries, and competing errors. Before using the same construction path
 for loaded articles, inspect the restoration contract and existing data. This is a
 structural candidate, not permission to strengthen restoration validation.
 
+### Existing primitive titles do not settle a new title design
+
+A new blog title must be trimmed and contain 10–200 Unicode code points. An
+existing task title uses a string with a 1–100 rule. Assess a blog-specific `Title`
+against keeping a string inside `Blog`; the different limits rule out casually
+sharing the task policy, not a blog-specific value object. Compare who normalizes
+and validates input, what create/update callers can pass, and how restoration
+preserves its contract. Where a validated value removes unchecked-string handling
+and centralizes meaningful policy, choose it even though the task feature uses a
+string. Leave the unrelated task implementation outside scope.
+
+Retaining a string requires a concrete comparison showing why aggregate-owned
+policy gives adequate enforcement with lower total complexity for these paths.
+A list of constructors and private fields without this comparison is an incomplete
+assessment. The title example guides the comparison; it is not a universal mandate
+to wrap every string.
+
 ### Restoration exposes a behavioral decision
 
 Mode C finds a proposed `Title` constructor shared by creation and restoration.
@@ -146,6 +225,11 @@ assessment report or a copied checklist. Every material rule needs an owner,
 enforcement path, and proof plan; every material structure choice needs a reason,
 material alternatives/tradeoffs, and a refinement boundary. Mark the outcome
 **retained**, **revised**, or **deferred** with a reason and any decision needed.
+Check that each material decision is traceable through Decision references above.
+A choice justified only by precedent, or a departure from an applicable candidate
+without the comparison in Evidence before precedent, has not passed assessment.
+Revise its rationale or design before deriving dependent strategy/tasks; defer it
+only when material evidence or a decision is actually missing.
 For deferred choices, identify the blocked work and condition for readiness.
 
 Derive strategy, dependencies, and DoD from the assessed design. If implementation

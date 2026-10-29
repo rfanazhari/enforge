@@ -38,6 +38,14 @@ in every mode.
 1. Read available, applicable project instructions, including `AGENTS.md` and
    `CLAUDE.md` at the root and instructions scoped to affected directories. Check
    their scope and precedence; neither filename automatically replaces the other.
+   Read backend/architecture standards supplied by the user or referenced by those
+   instructions, including their directory rules. Record the applicable path and
+   section; a standard need not be named AGENTS.md or CLAUDE.md to apply.
+   For Go backend work, read the bundled
+   [Backend Service Standard](references/backend-service-standard.md) as the default
+   baseline. Explicit user and project instructions take precedence over this
+   baseline. Apply its layer layout to Clean Architecture services; for other
+   architectures or languages, retain the project's applicable standards.
    Extract:
    - Tech stack (language, framework, database, API style — REST/gRPC/GraphQL/etc.)
    - Directory structure and where each kind of code lives
@@ -54,8 +62,13 @@ in every mode.
    unrelated legacy cleanup.
 3. Derive the project's **layer/component names** from what you find (e.g.
    handler/service/repository, controller/model/view, or whatever the project uses).
-   Use the project's own vocabulary in all output documents — never impose a
-   layer structure the project doesn't have.
+   Use the project's own vocabulary in all output documents. For directory and
+   package choices, follow explicit applicable standards first; where silent,
+   follow consistent repository conventions that fit the assessed requirements.
+   If neither settles the choice, select the simplest structure that meets the
+   requirements. Record material choices, their source or convention, and reasons
+   in the technical design; distinguish required placement from a design choice.
+   Resolve conflicts between binding instructions under Design Authority and Handoff.
 4. Ask only about material information still missing or unresolved conflicts after
    discovery. A missing instruction file alone is not a blocker. Discovery is done
    when the affected components, applicable constraints, usable references, and
@@ -283,9 +296,15 @@ and condition for readiness. Independent tasks may remain executable.]
 | [function/class/module name] | [package/file] | [purpose] | [what fits; relevant gaps] |
 
 ## 3. Net-New Code Inventory
-| Item | Layer/Component | Type | Notes |
-|------|-----------------|------|-------|
-| [name] | [component] | [contract/handler/service/etc.] | ... |
+| Item | Layer/Component | Package/Path | Type | Ownership / Notes |
+|------|-----------------|--------------|------|-------------------|
+| [name] | [component] | [planned location] | [aggregate root/value object/handler/etc.] | [owner or relationship; purpose] |
+
+[Classify each item by its responsibility and domain characteristics, independently
+of its package location. Give an aggregate root and its value objects separate rows,
+even when they share a package. Record ownership as a relationship. Describe a
+predicate as behavior of its owner when appropriate; a separate row does not require
+a separate type, file, or package.]
 
 ## 4. Branching / PR Strategy
 [Recommendation: one large PR or split, safe merge order; commit per task]

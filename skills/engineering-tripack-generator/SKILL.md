@@ -19,10 +19,10 @@ Generates or revises three standard technical documents for planning feature wor
 software project. Output is designed for direct use by engineers and can be reviewed by
 a tech lead or PM.
 
-The skill is **stack-agnostic**: it makes no assumptions about language, framework,
-architecture, or tooling. Everything project-specific is discovered from applicable
-project instructions and the codebase (see Project Context Discovery), and the output
-templates adapt to what is found there.
+The skill is **stack-agnostic**: discover the language, framework, architecture,
+and tooling from applicable project instructions and the codebase (see Project
+Context Discovery). Apply the scoped Go backend defaults below where relevant;
+the output templates adapt to the discovered project.
 
 The tripack records binding contracts, current design choices, and remaining work.
 Tasks reference technical-design sections for verification. Internal structure can
@@ -73,6 +73,33 @@ in every mode.
    discovery. A missing instruction file alone is not a blocker. Discovery is done
    when the affected components, applicable constraints, usable references, and
    remaining material uncertainties are identified and grounded in available sources.
+
+## Go SQL Persistence Default
+
+For Go backend work using SQL, use GORM as the default for CRUD and simple queries.
+Explicit user and project instructions take precedence. For existing features,
+assess the current adapter and compatibility; this default alone does not justify
+converting working persistence or adding a database to the feature's scope.
+
+- Choose raw SQL when it improves clarity, supports complex query requirements
+  (such as reporting, subqueries, unions, or calculations), or addresses a measured
+  performance need. Choose by query requirements and evidence, without a raw SQL
+  percentage target or a fixed table-count limit. Raw SQL may use GORM's `Raw`/`Exec`
+  within the same transaction where appropriate.
+- Keep persistence models and GORM dependencies in the infrastructure adapter,
+  separate from domain models and API DTOs. Keep business rules in their assessed
+  owners rather than moving them into ORM hooks.
+- Plan explicit SQL migrations with `golang-migrate` as the default; follow any
+  explicitly required project migration tooling. Keep schema changes reviewable
+  through migration files rather than runtime `AutoMigrate`.
+- In `technical-design.md`, record the adapter choice, material raw SQL exceptions
+  and reasons, model mapping, and transaction boundaries. Address relevant GORM
+  semantics: zero-value updates (`false`, `0`, empty strings), association query
+  behavior and N+1 risk, and soft deletion when used. Verify behavior against the
+  project's selected version and plan database integration checks where mocks
+  cannot establish correctness or performance.
+- Carry those decisions into `tactical-strategy.md` reuse/inventory and testing,
+  then into dependent `task-plan.md` tasks and their definitions of done.
 
 ## Input
 

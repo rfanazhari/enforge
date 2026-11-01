@@ -50,12 +50,12 @@ in every mode.
    - Tech stack (language, framework, database, API style — REST/gRPC/GraphQL/etc.)
    - Directory structure and where each kind of code lives
    - Code behavior conventions, patterns, and project-specific rules
-   - Tooling (migration tool, codegen, test commands, lint)
+   - Tooling (migration and seeding tools, codegen, test commands, lint)
 2. Verify and complete the picture from the codebase: package/module structure,
    one or two similar existing features/flows as pattern references, interface
    definition files (proto/OpenAPI/GraphQL schema/route definitions), and the
-   migrations directory if one exists. For reference flows, explain which parts
-   fit the new need and which limitations matter. Separate mandatory conventions
+   migrations directory, seeders, and reference-data sources if they exist. For
+   reference flows, explain which parts fit the new need and which limitations matter. Separate mandatory conventions
    from incidental existing structure. Existing code establishes current behavior,
    not design correctness; justify retention through the Evidence before precedent
    criteria in `references/design-assessment.md`. Assessing suitability does not authorize
@@ -100,6 +100,14 @@ converting working persistence or adding a database to the feature's scope.
   cannot establish correctness or performance.
 - Carry those decisions into `tactical-strategy.md` reuse/inventory and testing,
   then into dependent `task-plan.md` tasks and their definitions of done.
+
+## Master Data, Migrations, and Seed Planning
+
+In every mode, when requirements involve persisted master/reference data, schema
+changes, initial data, or a user request for a seeder, read
+[Master Data, Migrations, and Seed Planning](references/master-data-migrations-and-seeding.md)
+before drafting the affected design and tasks. It covers table decisions, migration
+artifacts, concrete seed-data recommendations, and their implementation handoff.
 
 ## Input
 
@@ -238,10 +246,21 @@ GraphQL schema, event/message contracts, CLI commands, or public library API]
 [If none: "No contract changes required"]
 
 ## 3. Data Model & Schema Changes
-[If none: "No schema changes required"]
+[Assess schema and seed needs separately; "No schema changes required" does not
+omit a requested seeder or required initial data. Apply Master Data, Migrations,
+and Seed Planning when relevant.]
 - Affected entities and final schema (per the project's DB and migration tooling)
-- Migration plan: forward migration + rollback path
+- Migration artifacts: proposed file paths, forward changes, rollback/recovery path
 - Impact on existing data (backfill, defaults, data loss risk)
+
+### Seed / Reference Data (when requested or required)
+| Target table | Stable key | Proposed values | Purpose / source / proposal status | Environments |
+|--------------|------------|-----------------|------------------------------------|--------------|
+| [table] | [key fields and value] | [concrete record values, or unresolved fields] | [required reference / demo / test; source or decision needed] | [targets] |
+
+- Delivery: [existing/proposed seeder or data-migration paths and mechanism]
+- Execution: [dependencies, rerun/conflict policy, rollback/cleanup behavior]
+- Open data decisions: [unknown required values, source/owner, affected work]
 
 ### Concepts and rules (when domain models/rules are affected)
 - Business concepts/terms, their meaning, and the context where each applies
@@ -331,7 +350,8 @@ and condition for readiness. Independent tasks may remain executable.]
 of its package location. Give an aggregate root and its value objects separate rows,
 even when they share a package. Record ownership as a relationship. Describe a
 predicate as behavior of its owner when appropriate; a separate row does not require
-a separate type, file, or package.]
+a separate type, file, or package. Include planned migration and seed artifacts
+from design §3; put reused artifacts in the reuse map.]
 
 ## 4. Branching / PR Strategy
 [Recommendation: one large PR or split, safe merge order; commit per task]
@@ -377,6 +397,8 @@ ownership and path contracts; distinguish planned checks from existing evidence.
       — depends: none — ref: design §X — DoD: [criteria]
 
 ### Sequential (must be done in order)
+[Include explicit migration and seed tasks when applicable, with artifact paths,
+dependencies, and verifiable DoD from design §3.]
 - [ ] T2. [Task title] — [Component] — [S/M/L] — depends: T1 — ref: design §X
       — DoD: [e.g. tests pass, lint clean, endpoint callable]
 
@@ -446,8 +468,10 @@ Justifications.
    assessments. Finish with affected behavior, reuse, and compatibility risks known
    or explicitly identified as unresolved.
 3. **Draft technical-design.md** — what is new/reused, rule ownership and enforcement,
-   path contracts, structure choices, and explicit constraints. Record business-driven
-   decisions in decision-log.md when applicable; keep technical reasons in the design.
+   path contracts, structure choices, and explicit constraints. Apply Master Data,
+   Migrations, and Seed Planning to schema/data work and user-requested seeders.
+   Record business-driven decisions in decision-log.md when applicable; keep
+   technical reasons in the design.
 4. **Assess and refine the design** — read [Design Assessment](references/design-assessment.md)
    in every mode before deriving strategy/tasks. Apply domain criteria when the
    change affects models/rules; briefly explain inapplicability otherwise. Record
@@ -466,6 +490,9 @@ Justifications.
 7. **Check consistency** — design outcomes, reuse/inventory, test strategy, task
    dependencies, and DoD must agree. Check each material rule/contract has planned
    verification and no dependent task is marked ready with a blocking decision open.
+   Check that each planned schema change has migration artifacts/tasks, and each
+   requested or required seeder has a dataset recommendation or an explicit data
+   decision blocking affected work; trace both through inventory, rollout, and DoD.
    In Mode C, preserve valid task IDs/status and revision/decision history. When an
    active business-driven decision is contradicted, surface it to the user; after
    resolution, mark the old entry `superseded by D[x]` (never delete it) and add the
